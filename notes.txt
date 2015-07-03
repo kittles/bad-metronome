@@ -1,0 +1,40 @@
+features:
+
+beat
+    volume adjust
+    sound for each beat
+    beat error distribution
+    mute beats
+
+metronome
+    bpm adjust
+    tap bpm
+    start / stop
+    add and remove beats
+    save setting
+
+
+
+structures:
+
+beat
+    bool muted
+    float volume
+    sring sound
+
+metronome
+    array beats
+    float bpm
+    bool on
+    int index
+
+
+tools:
+browserify
+jade (& something to compile)
+grunt
+less
+uglify
+concat
+underscore
+jquery
