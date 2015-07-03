@@ -3,7 +3,7 @@ var $ = require("jquery");
 var _ = require("underscore");
 var Beat = require("./controllers/Beat.js");
 var Metronome = require("./controllers/Metronome.js");
-var Spinner = require("./controllers/Spinner.js");
+var Slider = require("./controllers/Slider.js");
 var ctx = new AudioContext();
 
 ctx.masterGain = ctx.createGain();
@@ -14,9 +14,9 @@ $(document).ready(init);
 function init () {
     console.log("sup jobless roach =)");
 
-    var spinner = new Spinner();
-    window.spinner = spinner;
-    $(document.body).append(spinner.view.el);
+    //var spinner = new Spinner();
+    //window.spinner = spinner;
+    //$(document.body).append(spinner.view.el);
 
     //var metronome = new Metronome({
     //    ctx: ctx                            
