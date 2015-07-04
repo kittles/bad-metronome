@@ -12,7 +12,7 @@ ctx.masterGain.connect(ctx.destination);
 $(document).ready(init);
 
 function init () {
-    console.log("sup jobless roach =)");
+    console.log("sup jobless roach =)x");
 
     var spinner = new Spinner();
     window.spinner = spinner;
