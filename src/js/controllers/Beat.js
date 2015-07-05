@@ -1,6 +1,9 @@
 var $ = require("jquery");
 var BeatModel = require("../models/Beat.js");
 var BeatView = require("../views/Beat.js");
+var MouseDrag = require("../utils/MouseDrag.js");
+var TouchDrag = require("../utils/TouchDrag.js");
+var Drag = require("../utils/Drag.js");
 
 module.exports = Beat;
 
@@ -10,28 +13,19 @@ function Beat (settings) {
     }
     this.model = new BeatModel(settings);
     this.view = new BeatView(settings);
-    this.setVolume(settings.volume || 100);
-    //this.view.beat.click(this.toggleMute.bind(this));
-    this.isDragging = false;
-    this.mouseDown = false;
-    var that = this;
-    this.view.beat.mousedown(function (e) {
-        that.mousedownY = e.clientY;
-        $(window).mousemove(ondrag.bind(this));
-        $(window).one("mouseup", function () {
-            that.dragging = false;
-            $(window).unbind("mousemove");
-        });
+    this.setVolume(settings.volume || 50);
+    this.drag = new Drag({
+        el: this.view.beat, 
+        ondrag: ondrag.bind(this),
+        onend: onend.bind(this)
     });
-    this.view.beat.mouseup(function (e) {
-        if (!that.dragging) {
-            that.toggleMute();
-        }
-    });
-    function ondrag (e) {
-        that.dragging = true;
-        that.setVolume(that.model.volume + ((that.mousedownY - e.clientY) / 2));
-        that.mousedownY = e.clientY;
+}
+function ondrag (e) {
+    this.setVolume(this.model.volume + ((this.drag.oldPoint.y - this.drag.newPoint.y) / 2));
+}
+function onend (e) {
+    if (!this.drag.dragging) {
+        this.toggleMute();
     }
 }
 Beat.prototype.play = function play () {
