@@ -8,7 +8,7 @@ function Slider (settings) {
         var settings = {};
     }
     this.value = 120;
-    this.min = 0;
+    this.min = 20;
     this.max = 2000;
     this.scale = 100;
 }
@@ -20,10 +20,4 @@ Slider.prototype.setValue = function setValue (value) {
         value = this.max;
     }
     this.value = value;
-    //this.scale = this.setScale();
 };
-//Slider.prototype.setScale = function setScale () {
-//    // somehow based on value
-//    _.noop();
-//    return
-//};

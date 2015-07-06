@@ -5,17 +5,26 @@ var Beat = require("./controllers/Beat.js");
 var Metronome = require("./controllers/Metronome.js");
 var Spinner = require("./controllers/Spinner.js");
 var Slider = require("./controllers/Slider.js");
-var ctx = new AudioContext();
 
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var ctx = new AudioContext();
 ctx.masterGain = ctx.createGain();
 ctx.masterGain.connect(ctx.destination);
 
-$(document).ready(init);
+// unlock web audio and initialize app
+$(document).ready(function () {   
+    $(window).one("touchstart mousedown", function () {
+        var buffer = ctx.createBuffer(1, 1, 22050);
+        var source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
+    });
+    init();
+});
 
 function init () {
-    console.log("sup jobless roach =)x");
-
-
+    console.log("sup jobless roach =)");
     var metronome = new Metronome({
         ctx: ctx                            
     });
@@ -26,12 +35,8 @@ function init () {
             ctx: ctx                
         });
     });
-    window.metronome = metronome;
-
     var slider = new Slider(updateBPM);
-    window.slider = slider;
     $(document.body).append(slider.view.el);
-
     function updateBPM () {
         metronome.model.bpm = slider.model.value;
     }

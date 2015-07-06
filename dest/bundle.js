@@ -10764,8 +10764,6 @@ return jQuery;
 var $ = require("jquery");
 var BeatModel = require("../models/Beat.js");
 var BeatView = require("../views/Beat.js");
-var MouseDrag = require("../utils/MouseDrag.js");
-var TouchDrag = require("../utils/TouchDrag.js");
 var Drag = require("../utils/Drag.js");
 
 module.exports = Beat;
@@ -10778,7 +10776,7 @@ function Beat (settings) {
     this.view = new BeatView(settings);
     this.setVolume(settings.volume || 50);
     this.drag = new Drag({
-        el: this.view.beat, 
+        el: this.view.beatContainer, 
         ondrag: ondrag.bind(this),
         onend: onend.bind(this)
     });
@@ -10819,16 +10817,14 @@ Beat.prototype.toggleMute = function toggleMute () {
     }
 };
 Beat.prototype.setVolume = function setVolume (value) {
-    value = Math.max(value, 10);
-    value = Math.min(value, 100);
     this.model.setVolume(value);
-    this.view.scaleForVolume(value);
+    this.view.scaleForVolume(this.model.volume);
 };
 Beat.prototype.setSound = function setSound (value) {
     this.model.sound = value; 
 };
 
-},{"../models/Beat.js":8,"../utils/Drag.js":12,"../utils/MouseDrag.js":13,"../utils/TouchDrag.js":14,"../views/Beat.js":15,"jquery":1}],4:[function(require,module,exports){
+},{"../models/Beat.js":8,"../utils/Drag.js":12,"../views/Beat.js":13,"jquery":1}],4:[function(require,module,exports){
 var $ = require("jquery");
 var _ = require("underscore");
 var MetronomeModel = require("../models/Metronome.js");
@@ -10889,12 +10885,12 @@ Metronome.prototype.toggle = function toggle () {
     }
 };
 
-},{"../models/Metronome.js":9,"../views/Metronome.js":17,"./Beat.js":3,"jquery":1,"underscore":2}],5:[function(require,module,exports){
+},{"../models/Metronome.js":9,"../views/Metronome.js":15,"./Beat.js":3,"jquery":1,"underscore":2}],5:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var SliderView = require("../views/Slider.js");
 var SliderModel = require("../models/Slider.js");
-var MouseDrag = require("../utils/MouseDrag.js");
+var Drag = require("../utils/Drag.js");
 
 module.exports = Slider;
 
@@ -10903,13 +10899,13 @@ function Slider (dragCallback) {
     this.model = new SliderModel();
     this.view = new SliderView(this.model);
     this.dragCallback = dragCallback;
-    this.mouseDrag = new MouseDrag({
+    this.drag = new Drag({
         el: this.view.slider, 
         ondrag: ondrag.bind(this)
     });
 }
 function ondrag () {
-    var increment = this.mouseDrag.oldPoint.x - this.mouseDrag.newPoint.x;
+    var increment = this.drag.oldPoint.x - this.drag.newPoint.x;
     increment /= this.view.el.width();
     increment *= this.model.scale;
     this.model.setValue(this.model.value + increment);
@@ -10919,7 +10915,7 @@ function ondrag () {
     }
 }
 
-},{"../models/Slider.js":10,"../utils/MouseDrag.js":13,"../views/Slider.js":18,"jquery":1,"underscore":2}],6:[function(require,module,exports){
+},{"../models/Slider.js":10,"../utils/Drag.js":12,"../views/Slider.js":16,"jquery":1,"underscore":2}],6:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var SpinnerView = require("../views/Spinner.js");
@@ -10991,7 +10987,7 @@ function toDegrees (angle) {
     return angle * (180 / Math.PI);
 }
 
-},{"../views/Spinner.js":19,"jquery":1,"underscore":2}],7:[function(require,module,exports){
+},{"../views/Spinner.js":17,"jquery":1,"underscore":2}],7:[function(require,module,exports){
 /* global AudioContext */
 var $ = require("jquery");
 var _ = require("underscore");
@@ -10999,17 +10995,26 @@ var Beat = require("./controllers/Beat.js");
 var Metronome = require("./controllers/Metronome.js");
 var Spinner = require("./controllers/Spinner.js");
 var Slider = require("./controllers/Slider.js");
-var ctx = new AudioContext();
 
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var ctx = new AudioContext();
 ctx.masterGain = ctx.createGain();
 ctx.masterGain.connect(ctx.destination);
 
-$(document).ready(init);
+// unlock web audio and initialize app
+$(document).ready(function () {   
+    $(window).one("touchstart mousedown", function () {
+        var buffer = ctx.createBuffer(1, 1, 22050);
+        var source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
+    });
+    init();
+});
 
 function init () {
-    console.log("sup jobless roach =)x");
-
-
+    console.log("sup jobless roach =)");
     var metronome = new Metronome({
         ctx: ctx                            
     });
@@ -11020,12 +11025,8 @@ function init () {
             ctx: ctx                
         });
     });
-    window.metronome = metronome;
-
     var slider = new Slider(updateBPM);
-    window.slider = slider;
     $(document.body).append(slider.view.el);
-
     function updateBPM () {
         metronome.model.bpm = slider.model.value;
     }
@@ -11051,6 +11052,8 @@ function Beat (settings) {
 }
 
 Beat.prototype.setVolume = function setVolue (value) {
+    value = Math.max(value, 10);
+    value = Math.min(value, 100);
     this.volume = value;
     this.sound.gain.gain.value = this.volume / 100;
 };
@@ -11084,7 +11087,7 @@ function Slider (settings) {
         var settings = {};
     }
     this.value = 120;
-    this.min = 0;
+    this.min = 20;
     this.max = 2000;
     this.scale = 100;
 }
@@ -11096,13 +11099,7 @@ Slider.prototype.setValue = function setValue (value) {
         value = this.max;
     }
     this.value = value;
-    //this.scale = this.setScale();
 };
-//Slider.prototype.setScale = function setScale () {
-//    // somehow based on value
-//    _.noop();
-//    return
-//};
 
 },{"jquery":1,"underscore":2}],11:[function(require,module,exports){
 var $ = require("jquery");
@@ -11217,7 +11214,6 @@ function getCoordinates (e) {
             y: mouse.clientY
         };
     }
-    console.log(point);
     return point;
 }
 function contain (e) {
@@ -11226,107 +11222,6 @@ function contain (e) {
 }
 
 },{"jquery":1,"underscore":2}],13:[function(require,module,exports){
-var _ = require("underscore");
-var $ = require("jquery");
-
-module.exports = MouseDrag;
-
-function MouseDrag (settings) {
-    var that = this;
-    this.el = settings.el;
-    this.ondrag = settings.ondrag || _.noop;
-    this.onup = settings.onup || _.noop;
-    this.dragging = false;
-    this.oldPoint = null;
-    this.newPoint = null;
-    this.el.mousedown(this.handleMousedown.bind(this));
-}
-MouseDrag.prototype.handleMousedown = function handleMousedown (e) {
-    this.oldPoint = {
-        x: e.clientX,
-        y: e.clientY
-    };
-    window.currentEl = this.el;
-    $(window).mousemove(this.handleDrag.bind(this));
-    $(window).one("mouseup", this.handleMouseup.bind(this));
-};
-MouseDrag.prototype.handleDrag = function handleDrag (e) {
-    if (window.currentEl === this.el) {
-        this.dragging = true;
-        this.newPoint = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        this.ondrag();
-        this.oldPoint = this.newPoint;
-    }
-};
-MouseDrag.prototype.handleMouseup = function handleMouseup (e) {
-    if (window.currentEl === this.el) {
-        e.stopPropagation();
-        e.preventDefault();
-        this.onup();
-        window.currentEl = null;
-        this.dragging = false;
-        $(window).unbind("mousemove");
-    }
-};
-
-},{"jquery":1,"underscore":2}],14:[function(require,module,exports){
-var _ = require("underscore");
-var $ = require("jquery");
-
-module.exports = TouchDrag;
-
-function TouchDrag (settings) {
-    var that = this;
-    this.el = settings.el;
-    this.ondrag = settings.ondrag || _.noop;
-    this.onup = settings.onup || _.noop;
-    this.dragging = false;
-    this.oldPoint = null;
-    this.newPoint = null;
-    this.el.on("touchstart", this.handleTouchstart.bind(this));
-}
-TouchDrag.prototype.handleTouchstart = function handleTouchstart (e) {
-    var touch = getFirstTouch(e);
-    this.oldPoint = {
-        x: touch.clientX,
-        y: touch.clientY
-    };
-    window.currentEl = this.el;
-    $(window).on("touchmove", this.handleDrag.bind(this));
-    $(window).one("touchend", this.handleTouchend.bind(this));
-};
-TouchDrag.prototype.handleDrag = function handleDrag (e) {
-    if (window.currentEl === this.el) {
-        console.log("handleDrag");
-        var touch = getFirstTouch(e);
-        this.dragging = true;
-        this.newPoint = {
-            x: touch.clientX,
-            y: touch.clientY
-        };
-        this.ondrag();
-        this.oldPoint = this.newPoint;
-    }
-};
-TouchDrag.prototype.handleTouchend = function handleTouchend (e) {
-    if (window.currentEl === this.el) {
-        console.log("handleTouchend");
-        e.stopPropagation();
-        e.preventDefault();
-        this.onup();
-        window.currentEl = null;
-        this.dragging = false;
-        $(window).unbind("touchend");
-    }
-};
-function getFirstTouch (e) {
-    return e.originalEvent.touches[0];
-}
-
-},{"jquery":1,"underscore":2}],15:[function(require,module,exports){
 var $ = require("jquery");
 
 module.exports = Beat;
@@ -11340,36 +11235,44 @@ function Beat () {
     this.beat = $(document.createElement("div"));
     this.beat.addClass("beat");
 
-    this.transformString = function transformString () {
-        var str = "translateY(" + this.translateY + "%)";
-        str += " translateX(" + this.translateX + "px)";
-        str += " scale(" + (this.scale / 100) + ")";
-        return str;
-    };
-    this.scaleForVolume = function scaleForVolume (value) {
-        this.scale = (value / 100) * this.baseSize;
-        this.drawBeat();
-    };
-    this.setTranslateX = function setTranslateX (value) {
-        this.translateX = value; 
-        this.drawBeat();
-    };
-    this.setTranslateY = function setTranslateY (value) {
-        this.translateY = value; 
-        this.drawBeat();
-    };
-    this.drawBeat = function drawBeat () {
-        this.beat.css({
-            width: this.baseSize,
-            height: this.baseSize,
-            transform: this.transformString()
-        });
-    };
+    this.beatContainer = $(document.createElement("div"));
+    this.beatContainer.addClass("beat-container");
+
+    this.beatContainer.append(this.beat);
+    this.beatContainer.css({
+        width: 100,
+        height: 100
+    });
 
     this.drawBeat();
 }
+Beat.prototype.transformString = function transformString () {
+    var str = "translateY(" + this.translateY + "%)";
+    str += " translateX(" + this.translateX + "px)";
+    str += " scale(" + (this.scale / 100) + ")";
+    return str;
+};
+Beat.prototype.scaleForVolume = function scaleForVolume (value) {
+    this.scale = (value / 100) * this.baseSize;
+    this.drawBeat();
+};
+Beat.prototype.setTranslateX = function setTranslateX (value) {
+    this.translateX = value; 
+    this.drawBeat();
+};
+Beat.prototype.setTranslateY = function setTranslateY (value) {
+    this.translateY = value; 
+    this.drawBeat();
+};
+Beat.prototype.drawBeat = function drawBeat () {
+    this.beat.css({
+        width: this.baseSize,
+        height: this.baseSize,
+        transform: this.transformString()
+    });
+};
 
-},{"jquery":1}],16:[function(require,module,exports){
+},{"jquery":1}],14:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 
@@ -11380,7 +11283,7 @@ function Button (className) {
     this.el.attr("class", "btn " + className);
 }
 
-},{"jquery":1,"underscore":2}],17:[function(require,module,exports){
+},{"jquery":1,"underscore":2}],15:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var Button = require("./Button.js");
@@ -11430,9 +11333,9 @@ Metronome.prototype.addBeat = function addBeat (beat) {
         row = this.makeRow();
         this.container.css("height", this.container.height() + 100);
     }
-    beat.view.beat.css("left", row.width());
+    beat.view.beatContainer.css("left", row.width());
     row.css("width", row.width() + 100);
-    row.append(beat.view.beat);
+    row.append(beat.view.beatContainer);
 };
 Metronome.prototype.removeBeat = function removeBeat () {
     var row;
@@ -11450,7 +11353,7 @@ Metronome.prototype.removeBeat = function removeBeat () {
     }
 };
 
-},{"./Button.js":16,"jquery":1,"underscore":2}],18:[function(require,module,exports){
+},{"./Button.js":14,"jquery":1,"underscore":2}],16:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 
@@ -11461,6 +11364,7 @@ function Slider (model) {
     this.el = $(document.createElement("div"));
     this.el.attr("class", "slider-container");
     this.slider = null;
+    this.makeInput();
     this.makeSlider();
     this.addTicks();
 }
@@ -11474,11 +11378,27 @@ Slider.prototype.makeSlider = function makeSlider () {
     var width = this.el.width() > 0 ? this.el.width() : $(document).width();
     this.slider.css({
         width: width * ((this.model.max - this.model.min) / this.model.scale),
-        height: "100%",
         transform: "translateX(" + (-10 * this.model.value) + ")"
     });
-    this.updateSlider();
     this.el.append(this.slider);
+    var tickArrow = $(document.createElement("div"));
+    tickArrow.attr("class", "tick-arrow");
+    this.el.append(tickArrow);
+    this.updateSlider();
+};
+Slider.prototype.makeInput = function makeInput () {
+    this.input = $(document.createElement("input"));
+    this.input.attr("class", "slider-input");
+    this.input.val(+this.model.value);
+    this.el.append(this.input);
+    $(this.input).on("change", this.onInputChange.bind(this));
+};
+Slider.prototype.onInputChange = function onInputChange () {
+    var value = parseInt(this.input.val());
+    if (!isNaN(value)) {
+        this.model.value = value;
+        this.updateSlider();
+    }
 };
 Slider.prototype.addTicks = function addTicks () {
     var scale = this.model.scale;           
@@ -11491,21 +11411,30 @@ Slider.prototype.addTicks = function addTicks () {
     }
 };
 Slider.prototype.updateSlider = function updateSlider () {
+    var xTranslate = this.model.value * this.getScaleOnScreen();
+    xTranslate -= this.el.width() / 2;
     this.slider.css({
-        transform: "translateX(-" + (this.model.value * this.getScaleOnScreen()) + "px)"
+        transform: "translateX(-" + xTranslate + "px)"
     });
+    this.input.val(+this.model.value.toFixed(0));
 };
 Slider.prototype.makeTick = function makeTick (number, parent) {
     var tick = $(document.createElement("div"));
-    tick.text(+number);
+    var tickLine = $(document.createElement("div"));
+    var tickText = $(document.createElement("div"));
+    tick.attr("class", "tick");
+    tickLine.attr("class", "tick-line");
+    tickText.attr("class", "tick-text");
+    tick.append(tickLine);
+    tick.append(tickText);
+    tickText.text(+number);
     tick.css({
-        position: "absolute",
         left: this.getScaleOnScreen() * number
     });
     parent.append(tick);
 };
 
-},{"jquery":1,"underscore":2}],19:[function(require,module,exports){
+},{"jquery":1,"underscore":2}],17:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 

@@ -71,7 +71,6 @@ function getCoordinates (e) {
             y: mouse.clientY
         };
     }
-    console.log(point);
     return point;
 }
 function contain (e) {

@@ -47,9 +47,9 @@ Metronome.prototype.addBeat = function addBeat (beat) {
         row = this.makeRow();
         this.container.css("height", this.container.height() + 100);
     }
-    beat.view.beat.css("left", row.width());
+    beat.view.beatContainer.css("left", row.width());
     row.css("width", row.width() + 100);
-    row.append(beat.view.beat);
+    row.append(beat.view.beatContainer);
 };
 Metronome.prototype.removeBeat = function removeBeat () {
     var row;

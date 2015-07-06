@@ -1,8 +1,6 @@
 var $ = require("jquery");
 var BeatModel = require("../models/Beat.js");
 var BeatView = require("../views/Beat.js");
-var MouseDrag = require("../utils/MouseDrag.js");
-var TouchDrag = require("../utils/TouchDrag.js");
 var Drag = require("../utils/Drag.js");
 
 module.exports = Beat;
@@ -15,7 +13,7 @@ function Beat (settings) {
     this.view = new BeatView(settings);
     this.setVolume(settings.volume || 50);
     this.drag = new Drag({
-        el: this.view.beat, 
+        el: this.view.beatContainer, 
         ondrag: ondrag.bind(this),
         onend: onend.bind(this)
     });
@@ -56,10 +54,8 @@ Beat.prototype.toggleMute = function toggleMute () {
     }
 };
 Beat.prototype.setVolume = function setVolume (value) {
-    value = Math.max(value, 10);
-    value = Math.min(value, 100);
     this.model.setVolume(value);
-    this.view.scaleForVolume(value);
+    this.view.scaleForVolume(this.model.volume);
 };
 Beat.prototype.setSound = function setSound (value) {
     this.model.sound = value; 
