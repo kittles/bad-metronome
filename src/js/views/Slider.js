@@ -11,6 +11,7 @@ function Slider (model) {
     this.makeInput();
     this.makeSlider();
     this.addTicks();
+    this.updateSlider();
 }
 Slider.prototype.getScaleOnScreen = function getScaleOnScreen () {
     // how much is 1px worth of value
@@ -56,7 +57,8 @@ Slider.prototype.addTicks = function addTicks () {
 };
 Slider.prototype.updateSlider = function updateSlider () {
     var xTranslate = this.model.value * this.getScaleOnScreen();
-    xTranslate -= this.el.width() / 2;
+    var width = this.el.width() ? this.el.width() : $(document).width();
+    xTranslate -= width / 2;
     this.slider.css({
         transform: "translateX(-" + xTranslate + "px)"
     });
