@@ -35,9 +35,9 @@ function init () {
             ctx: ctx                
         });
     });
-    var slider = new Slider(updateBPM);
+    var slider = new Slider(_.throttle(updateBPM, 100));
     $(document.body).append(slider.view.el);
     function updateBPM () {
-        metronome.model.bpm = slider.model.value;
+        metronome.setBpm(slider.model.value);
     }
 }

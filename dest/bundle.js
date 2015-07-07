@@ -10844,51 +10844,83 @@ function Metronome (settings) {
     this.view.removeBtn.el.click(this.removeBeat.bind(this));
     this.view.toggleBtn.el.click(this.toggle.bind(this));
 
+    this.scheduledBeatNumber = -1; // so model.beat reflects whats currently happening
     this.scheduledBeats = []; // timeout ids
     this.startTime = -1;
     this.buffer = 2000; // ms to schedule beats ahead
+    this.bufferIntervalId = -1;
+    this.lastBeatAbsoluteTime = -1;
 }
+Metronome.prototype.current = function current () {
+    return this.ctx.currentTime * 1000;
+};
+Metronome.prototype.setBpm = function setBpm (value) {
+    this.model.bpm = value;
+    if (this.model.playing) {
+        // need to reset start time because beats are scheduled based on
+        // start time + bpm, so there would be a huge gap otherwise
+        var msSinceLastBeat = this.current() - this.lastBeatAbsoluteTime;
+        // dont want to jump forward or back in the bar, so need to set
+        // the start time so the next beat scheduled is the right one
+        var barBeat = this.model.beat % this.model.beats.length;
+        this.model.beat = barBeat;
+        this.scheduledBeatNumber = barBeat;
+        // account for the beats that have already happened
+        this.startTime = this.current() - (this.model.msPerBeat() * barBeat);
+        // account for the time after the last beat that has happened
+        this.startTime -= msSinceLastBeat;
+        this.clearScheduledBeats();
+        this.checkBuffer();
+    }
+};
+Metronome.prototype.checkBuffer = function checkBuffer () {
+    while (!this.bufferFull.call(this)) {
+        this.scheduleBeat();
+    }
+};
+Metronome.prototype.scheduleBeat = function scheduleBeat () {
+    var beatNumber = ++this.scheduledBeatNumber;
+    var beatTimeoutTime = this.getBeatAbsoluteTime(beatNumber) - this.current();
+    var beatTimeoutId = setTimeout(this.doBeat.bind(this, beatNumber), 
+                                   beatTimeoutTime);
+    this.scheduledBeats.push(beatTimeoutId);
+};
+Metronome.prototype.doBeat = function doBeat (number) {
+    var beats = this.model.beats;
+    var beat = beats[number % beats.length];
+    _.invoke(this.model.beats, "off");
+    beat.on();
+    this.model.beat++;
+    this.lastBeatAbsoluteTime = this.current();
+    this.scheduledBeats.splice(0, 1);
+};
+Metronome.prototype.getBeatAbsoluteTime = function getBeatAbsoluteTime (number) {
+    return this.startTime + (number * this.model.msPerBeat());
+};
+Metronome.prototype.clearScheduledBeats = function clearScheduledBeats () {
+    while (this.scheduledBeats.length > 0) {
+        clearTimeout(this.scheduledBeats.pop());
+    }
+};
 Metronome.prototype.start = function start () {
-    console.log("starting");
-    var that = this;
     this.model.playing = true;
-    this.startTime = this.ctx.currentTime * 1000;
+    this.startTime = this.current();
     this.scheduledBeats = [];
-    // should use ms from start instead of just timeout
-    checkBuffer();
-    setInterval(checkBuffer, this.buffer / 2);
-    function checkBuffer () {
-        while (!that.bufferFull.call(that)) {
-            scheduleBeat();
-        }
-    }
-    function scheduleBeat () {
-        var beatNumber = ++that.model.beat;
-        var beatTimeoutTime = getBeatAbsoluteTime(beatNumber) - (that.ctx.currentTime * 1000);
-        var beatTimeoutId = setTimeout(doBeat.bind(that, beatNumber), 
-                                       beatTimeoutTime);
-        that.scheduledBeats.push(beatTimeoutId);
-    }
-    function doBeat (number) {
-        var beats = that.model.beats;
-        var beat = beats[number % beats.length];
-        _.invoke(that.model.beats, "off");
-        beat.on();
-        that.scheduledBeats.splice(0, 1);
-    }
-    function getBeatAbsoluteTime (number) {
-        return that.startTime + (number * that.model.msPerBeat());
-    }
+    this.checkBuffer();
+    this.bufferIntervalId = setInterval(this.checkBuffer.bind(this), this.buffer / 2);
+};
+Metronome.prototype.stop = function stop () {
+    this.model.playing = false;
+    clearInterval(this.bufferIntervalId);
+    this.clearScheduledBeats.call(this);
+    this.scheduledBeatNumber = -1;
+    this.model.beat = -1;
+    this.scheduledBeats = [];
+    _.invoke(this.model.beats, "off");
 };
 Metronome.prototype.bufferFull = function bufferFull () {
     var buffer = this.scheduledBeats.length * this.model.msPerBeat();
     return (buffer >= this.buffer);
-};
-Metronome.prototype.stop = function stop () {
-    this.model.playing = false;
-    clearTimeout(this.timeoutId);
-    this.model.beat = -1;
-    _.invoke(this.model.beats, "off");
 };
 Metronome.prototype.addBeat = function addBeat () {
     var beat = new Beat({
@@ -10902,27 +10934,6 @@ Metronome.prototype.removeBeat = function removeBeat () {
     this.model.beats.pop();
     this.view.removeBeat();
 };
-//Metronome.prototype.start = function start () {
-//    var that = this;
-//    var c = 0;
-//    this.model.playing = true;
-//    doStart();
-//    // should use ms from start instead of just timeout
-//    function doStart () {
-//        that.model.beat++; 
-//        var beats = that.model.beats;
-//        var beat = beats[that.model.beat % beats.length];
-//        _.invoke(beats, "off");
-//        beat.on();
-//        that.timeoutId = setTimeout(doStart, that.model.msPerBeat());
-//    }
-//};
-//Metronome.prototype.stop = function stop () {
-//    this.model.playing = false;
-//    clearTimeout(this.timeoutId);
-//    this.model.beat = -1;
-//    _.invoke(this.model.beats, "off");
-//};
 Metronome.prototype.toggle = function toggle () {
     if (this.model.playing) {
         this.stop();
@@ -11071,10 +11082,10 @@ function init () {
             ctx: ctx                
         });
     });
-    var slider = new Slider(updateBPM);
+    var slider = new Slider(_.throttle(updateBPM, 100));
     $(document.body).append(slider.view.el);
     function updateBPM () {
-        metronome.model.bpm = slider.model.value;
+        metronome.setBpm(slider.model.value);
     }
 }
 
