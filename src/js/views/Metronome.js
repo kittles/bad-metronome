@@ -2,6 +2,8 @@ var _ = require("underscore");
 var $ = require("jquery");
 var Button = require("./Button.js");
 
+var MAX_BEAT_SIZE = 120;
+
 module.exports = Metronome;
 
 function Metronome () {
@@ -11,11 +13,11 @@ function Metronome () {
     this.uiContainer.attr("class", "metronome-ui-container");
     this.rows = [];
     this.addBtn = new Button("add-btn");
-    this.addBtn.el.text("Add Beat");
+    this.addBtn.textContainer.text("+");
     this.removeBtn = new Button("remove-btn");
-    this.removeBtn.el.text("Remove Beat");
+    this.removeBtn.textContainer.text("-");
     this.toggleBtn = new Button("toggle-btn");
-    this.toggleBtn.el.text("Toggle");
+    this.toggleBtn.textContainer.text("Toggle");
     this.uiContainer.append(this.removeBtn.el);
     this.uiContainer.append(this.addBtn.el);
     this.uiContainer.append(this.toggleBtn.el);
@@ -34,35 +36,21 @@ Metronome.prototype.makeRow = function makeRow () {
     return row;
 };
 Metronome.prototype.addBeat = function addBeat (beat) {
-    var containerWidth = this.container.width();
-    var row;
-    if (this.rows.length) {
-        row = this.rows[this.rows.length - 1];
-    } else {
-        row = this.makeRow();
-        this.container.css("height", this.container.height() + 100);
-    }
-    // check if there is room for another beat on the row
-    if ((containerWidth - row.width()) < 100) {
-        row = this.makeRow();
-        this.container.css("height", this.container.height() + 100);
-    }
-    beat.view.beatContainer.css("left", row.width());
-    row.css("width", row.width() + 100);
-    row.append(beat.view.beatContainer);
+    this.resizeBeats(this.container.children().add(beat.view.beatContainer));
+    this.container.append(beat.view.beatContainer);
 };
 Metronome.prototype.removeBeat = function removeBeat () {
-    var row;
-    if (this.rows.length) {
-        row = this.rows[this.rows.length - 1];
-    } else {
-        return;
-    }
-    row.children().last().remove();
-    row.css("width", row.width() - 100);
-    if (row.width() < 10) {
-        var oldRow = this.rows.pop();
-        oldRow.remove();
-        this.container.css("height", this.container.height() - 100);
+    this.container.children().last().remove();
+    this.resizeBeats(this.container.children());
+};
+Metronome.prototype.resizeBeats = function resizeBeats (beats) {
+    var width = $(window).width();
+    var beatSize = Math.min((width / beats.length), MAX_BEAT_SIZE);
+    for (var i = 0; i < beats.length; i++) {
+        var beat = beats.eq(i);
+        beat.css({
+            width: beatSize,
+            height: "100%"
+        });
     }
 };

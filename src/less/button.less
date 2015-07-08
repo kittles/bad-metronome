@@ -1,12 +1,35 @@
+@green1: #0DFFA5;
+@green2: #0CE857;
+@green3: #00FF10;
+@green4: #48E80C;
+@green5: #A3FF0D;
+
 .btn {
     display: inline-block;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 7px;
-    border: 1px solid rgba(0, 0, 0, 0.4);
+    margin: 5px;
+    height: 50px;
+    border-radius: 10px;
+    border-top: 1px solid @green5;
+    border-left: 1px solid @green4;
+    border-right: 1px solid @green4;
+    border-bottom: 1px solid @green2;
     text-align: center;
     cursor: pointer;
 }
 .btn:hover {
     background-color: white;
+}
+.btn-text-container {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
+.add-btn, .remove-btn {
+    width: 50px;
+    font-size: 20px;
+}
+.toggle-btn {
+    width: 150px;
+    font-size: 20px;
 }

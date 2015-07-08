@@ -10795,11 +10795,20 @@ Beat.prototype.play = function play () {
     }
 };
 Beat.prototype.on = function on () {
-    this.view.beat.addClass("current-beat");
+    this.view.beatContainer.addClass("current-beat-container");
+    if (!this.model.muted) {
+        this.view.beat.addClass("current-beat");
+    }
+    var that = this;
+    setTimeout(function () {
+        that.view.beat.removeClass("current-beat");
+    }, 150);
+    
     this.play();
 };
 Beat.prototype.off = function off () {
     this.view.beat.removeClass("current-beat");
+    this.view.beatContainer.removeClass("current-beat-container");
 };
 Beat.prototype.mute = function mute () {
     this.model.muted = true;
@@ -11075,18 +11084,21 @@ function init () {
     var metronome = new Metronome({
         ctx: ctx                            
     });
+    var slider = new Slider(_.throttle(updateBPM, 100));
     $("body").append(metronome.view.uiContainer);
+    $(document.body).append(slider.view.el);
     $("body").append(metronome.view.container);
     _.times(4, function () {
         metronome.addBeat({
             ctx: ctx                
         });
     });
-    var slider = new Slider(_.throttle(updateBPM, 100));
-    $(document.body).append(slider.view.el);
     function updateBPM () {
         metronome.setBpm(slider.model.value);
     }
+    var mc = $(".metronome-container");
+    var height = $(window).height() - mc.offset().top;
+    mc.css("height", height);
 }
 
 },{"./controllers/Beat.js":3,"./controllers/Metronome.js":4,"./controllers/Slider.js":5,"./controllers/Spinner.js":6,"jquery":1,"underscore":2}],8:[function(require,module,exports){
@@ -11284,33 +11296,28 @@ var $ = require("jquery");
 module.exports = Beat;
 
 function Beat () {
-    this.baseSize = 100;
+    this.baseSize = "90%";
     this.translateY = 0;
     this.translateX = 0;
-    this.scale = 1;
+    this.scaleY = 1;
 
     this.beat = $(document.createElement("div"));
     this.beat.addClass("beat");
 
     this.beatContainer = $(document.createElement("div"));
     this.beatContainer.addClass("beat-container");
-
     this.beatContainer.append(this.beat);
-    this.beatContainer.css({
-        width: 100,
-        height: 100
-    });
 
     this.drawBeat();
 }
 Beat.prototype.transformString = function transformString () {
-    var str = "translateY(" + this.translateY + "%)";
-    str += " translateX(" + this.translateX + "px)";
-    str += " scale(" + (this.scale / 100) + ")";
+    var str = "translateY(" + this.translateY + "%) ";
+    str +=    "translateX(" + this.translateX + "px) ";
+    str +=    "scaleY(" + this.scaleY + ")";
     return str;
 };
 Beat.prototype.scaleForVolume = function scaleForVolume (value) {
-    this.scale = (value / 100) * this.baseSize;
+    this.scaleY = (value / 100);
     this.drawBeat();
 };
 Beat.prototype.setTranslateX = function setTranslateX (value) {
@@ -11337,13 +11344,18 @@ module.exports = Button;
 
 function Button (className) {
     this.el = $(document.createElement("div"));
+    this.textContainer = $(document.createElement("div"));
+    this.el.append(this.textContainer);
     this.el.attr("class", "btn " + className);
+    this.textContainer.attr("class", "btn-text-container");
 }
 
 },{"jquery":1,"underscore":2}],15:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var Button = require("./Button.js");
+
+var MAX_BEAT_SIZE = 120;
 
 module.exports = Metronome;
 
@@ -11354,11 +11366,11 @@ function Metronome () {
     this.uiContainer.attr("class", "metronome-ui-container");
     this.rows = [];
     this.addBtn = new Button("add-btn");
-    this.addBtn.el.text("Add Beat");
+    this.addBtn.textContainer.text("+");
     this.removeBtn = new Button("remove-btn");
-    this.removeBtn.el.text("Remove Beat");
+    this.removeBtn.textContainer.text("-");
     this.toggleBtn = new Button("toggle-btn");
-    this.toggleBtn.el.text("Toggle");
+    this.toggleBtn.textContainer.text("Toggle");
     this.uiContainer.append(this.removeBtn.el);
     this.uiContainer.append(this.addBtn.el);
     this.uiContainer.append(this.toggleBtn.el);
@@ -11377,36 +11389,22 @@ Metronome.prototype.makeRow = function makeRow () {
     return row;
 };
 Metronome.prototype.addBeat = function addBeat (beat) {
-    var containerWidth = this.container.width();
-    var row;
-    if (this.rows.length) {
-        row = this.rows[this.rows.length - 1];
-    } else {
-        row = this.makeRow();
-        this.container.css("height", this.container.height() + 100);
-    }
-    // check if there is room for another beat on the row
-    if ((containerWidth - row.width()) < 100) {
-        row = this.makeRow();
-        this.container.css("height", this.container.height() + 100);
-    }
-    beat.view.beatContainer.css("left", row.width());
-    row.css("width", row.width() + 100);
-    row.append(beat.view.beatContainer);
+    this.resizeBeats(this.container.children().add(beat.view.beatContainer));
+    this.container.append(beat.view.beatContainer);
 };
 Metronome.prototype.removeBeat = function removeBeat () {
-    var row;
-    if (this.rows.length) {
-        row = this.rows[this.rows.length - 1];
-    } else {
-        return;
-    }
-    row.children().last().remove();
-    row.css("width", row.width() - 100);
-    if (row.width() < 10) {
-        var oldRow = this.rows.pop();
-        oldRow.remove();
-        this.container.css("height", this.container.height() - 100);
+    this.container.children().last().remove();
+    this.resizeBeats(this.container.children());
+};
+Metronome.prototype.resizeBeats = function resizeBeats (beats) {
+    var width = $(window).width();
+    var beatSize = Math.min((width / beats.length), MAX_BEAT_SIZE);
+    for (var i = 0; i < beats.length; i++) {
+        var beat = beats.eq(i);
+        beat.css({
+            width: beatSize,
+            height: "100%"
+        });
     }
 };
 
@@ -11438,7 +11436,8 @@ Slider.prototype.makeSlider = function makeSlider () {
         width: width * ((this.model.max - this.model.min) / this.model.scale),
         transform: "translateX(" + (-10 * this.model.value) + ")"
     });
-    this.el.append(this.slider);
+    //this.el.append(this.slider);
+    this.slider.insertBefore(this.input);
     var tickArrow = $(document.createElement("div"));
     tickArrow.attr("class", "tick-arrow");
     this.el.append(tickArrow);
@@ -11455,7 +11454,12 @@ Slider.prototype.onInputChange = function onInputChange () {
     var value = parseInt(this.input.val());
     if (!isNaN(value)) {
         this.model.value = value;
+        this.slider.addClass("slider-transition");
         this.updateSlider();
+        var that = this;
+        setTimeout(function () {
+            that.slider.removeClass("slider-transition");
+        }, 800);
     }
 };
 Slider.prototype.addTicks = function addTicks () {

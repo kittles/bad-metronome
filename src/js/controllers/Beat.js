@@ -32,11 +32,20 @@ Beat.prototype.play = function play () {
     }
 };
 Beat.prototype.on = function on () {
-    this.view.beat.addClass("current-beat");
+    this.view.beatContainer.addClass("current-beat-container");
+    if (!this.model.muted) {
+        this.view.beat.addClass("current-beat");
+    }
+    var that = this;
+    setTimeout(function () {
+        that.view.beat.removeClass("current-beat");
+    }, 150);
+    
     this.play();
 };
 Beat.prototype.off = function off () {
     this.view.beat.removeClass("current-beat");
+    this.view.beatContainer.removeClass("current-beat-container");
 };
 Beat.prototype.mute = function mute () {
     this.model.muted = true;

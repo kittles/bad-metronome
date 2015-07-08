@@ -28,16 +28,19 @@ function init () {
     var metronome = new Metronome({
         ctx: ctx                            
     });
+    var slider = new Slider(_.throttle(updateBPM, 100));
     $("body").append(metronome.view.uiContainer);
+    $(document.body).append(slider.view.el);
     $("body").append(metronome.view.container);
     _.times(4, function () {
         metronome.addBeat({
             ctx: ctx                
         });
     });
-    var slider = new Slider(_.throttle(updateBPM, 100));
-    $(document.body).append(slider.view.el);
     function updateBPM () {
         metronome.setBpm(slider.model.value);
     }
+    var mc = $(".metronome-container");
+    var height = $(window).height() - mc.offset().top;
+    mc.css("height", height);
 }

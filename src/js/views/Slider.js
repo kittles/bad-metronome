@@ -25,7 +25,8 @@ Slider.prototype.makeSlider = function makeSlider () {
         width: width * ((this.model.max - this.model.min) / this.model.scale),
         transform: "translateX(" + (-10 * this.model.value) + ")"
     });
-    this.el.append(this.slider);
+    //this.el.append(this.slider);
+    this.slider.insertBefore(this.input);
     var tickArrow = $(document.createElement("div"));
     tickArrow.attr("class", "tick-arrow");
     this.el.append(tickArrow);
@@ -42,7 +43,12 @@ Slider.prototype.onInputChange = function onInputChange () {
     var value = parseInt(this.input.val());
     if (!isNaN(value)) {
         this.model.value = value;
+        this.slider.addClass("slider-transition");
         this.updateSlider();
+        var that = this;
+        setTimeout(function () {
+            that.slider.removeClass("slider-transition");
+        }, 800);
     }
 };
 Slider.prototype.addTicks = function addTicks () {

@@ -4,11 +4,34 @@
 @import "./beat.less";
 @import "./slider.less";
 
+@green1: #0DFFA5;
+@green2: #0CE857;
+@green3: #00FF10;
+@green4: #48E80C;
+@green5: #A3FF0D;
+
+@warmPurple: #AE75FF;
+@purple: #7C6AE8;
+@lightPurple: #8191FF;
+@blue: #6A9BE8;
+@lightBlue: #75CFFF;
+
 body {
-    background: rgba(0, 0, 0, 0.1);
     text-align: center;
     -moz-user-select: none; 
     -khtml-user-select: none; 
     -webkit-user-select: none; 
     -o-user-select: none;
+    overflow-x: hidden;
+    font-family: 'Ubuntu', sans-serif;
+    background-color: @warmPurple;
+}
+h1 {
+    font-size: 3em;
+    color: @lightBlue;
+}
+.header {
+    width: 100%;
+    height: 80px;
+    background-color: white;
 }

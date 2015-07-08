@@ -3,14 +3,20 @@
     margin: 0 auto;
 }
 .beat-container {
-    position: absolute;
+    position: relative;
+    display: inline-block;
     cursor: pointer;
+    height: 100%;
+}
+.current-beat-container {
+    background-color: rgba(255, 255, 255, 0.4);
 }
 .beat {
-    position: absolute;
+    position: relative;
+    top: 5%;
+    left: 5%;
     background-color: rgba(0, 0, 0, 0.4);
     cursor: pointer;
-    border-radius: 100px;
     transition: background-color 0.3s ease-out;
 }
 .muted {

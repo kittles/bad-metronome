@@ -1,40 +1,31 @@
-features:
-
-beat
-    volume adjust
-    sound for each beat
-    beat error distribution
-    mute beats
-
-metronome
-    bpm adjust
-    tap bpm
-    start / stop
-    add and remove beats
-    save setting
-
-
-
-structures:
-
-beat
-    bool muted
-    float volume
-    sring sound
-
-metronome
-    array beats
-    float bpm
-    bool on
-    int index
-
-
-tools:
-browserify
-jade (& something to compile)
-grunt
-less
-uglify
-concat
-underscore
-jquery
+fav icon
+title bar
+meta data keywords etc
+sharing
+window resize handling
+play stop button
+add remove beat buttons
+visual hierarchy
+colors
+transitions
+info disclosure
+save settings
+tap for tempo
+"bad drummer" features
+high score (most time spent with it on)
+full screen mode on ios
+lefty vs righty
+number of beats per row
+master volume
+a/b testing
+google analytics
+language select
+when no beats should say "click + to add beats"
+guided tour
+tooltips
+feature requests
+auto prefix css
+default beat sound setting
+boolean flash beat setting
+reset to defaults
+pause on lose focus
