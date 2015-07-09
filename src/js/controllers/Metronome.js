@@ -100,6 +100,7 @@ Metronome.prototype.addBeat = function addBeat () {
         ctx: this.ctx,
         path: "/sounds/basic.wav"        
     });
+    beat.view.setNumber(this.model.beats.length + 1);
     this.model.beats.push(beat);
     this.view.addBeat(beat);
 };

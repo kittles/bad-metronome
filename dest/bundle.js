@@ -10936,6 +10936,7 @@ Metronome.prototype.addBeat = function addBeat () {
         ctx: this.ctx,
         path: "/sounds/basic.wav"        
     });
+    beat.view.setNumber(this.model.beats.length + 1);
     this.model.beats.push(beat);
     this.view.addBeat(beat);
 };
@@ -11304,16 +11305,24 @@ function Beat () {
     this.beat = $(document.createElement("div"));
     this.beat.addClass("beat");
 
+    this.beatText = $(document.createElement("div"));
+    this.beatText.addClass("beat-text");
+
     this.beatContainer = $(document.createElement("div"));
     this.beatContainer.addClass("beat-container");
+    this.beatContainer.append(this.beatText);
     this.beatContainer.append(this.beat);
 
     this.drawBeat();
 }
+Beat.prototype.setNumber = function setNumber (value) {
+    this.beatText.text(+value);
+};
 Beat.prototype.transformString = function transformString () {
     var str = "translateY(" + this.translateY + "%) ";
     str +=    "translateX(" + this.translateX + "px) ";
     str +=    "scaleY(" + this.scaleY + ")";
+    str +=    "scaleX(0.7)";
     return str;
 };
 Beat.prototype.scaleForVolume = function scaleForVolume (value) {
