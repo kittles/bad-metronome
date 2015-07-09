@@ -4,8 +4,10 @@
     height: 100px;
     width: 100%;
     z-index: 10;
+    border-top: 1px solid rgb(159, 215, 255);
+    border-bottom: 1px solid rgb(95, 153, 195);
 }
-@sliderColor: rgba(210, 210, 210, 1);
+@sliderColor: rgba(151, 192, 221, 1);
 .slider-slider {
     position: absolute;
     height: 100px;
@@ -15,45 +17,56 @@
 .slider-transition {
     transition: all 0.8s ease-in-out;
 }
-@borderColor: rgba(0, 0, 0, 0.4);
+@borderColor: #9fd7ff;
+@brTopLeft: 10px;
+@brTopRight: 10px;
+@brBottomLeft: 0px;
+@brBottomRight: 0px;
 .slider-input {
     position: absolute;
-    width: 100px;
-    top: 100%;
+    width: 70px;
+    //top: 100%;
     text-align: center;
     border-right: 1px solid @borderColor;
     border-left: 1px solid @borderColor;
     border-bottom: 1px solid @borderColor;
-    border-top: 1px solid #fff;
-    -moz-border-radius-bottomleft: 10px;
-    -webkit-border-bottom-left-radius: 10px;
-     border-bottom-left-radius: 10px;
-    -moz-border-radius-bottomright: 10px;
-    -webkit-border-bottom-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    -moz-border-radius-topleft: 0px;
-    -webkit-border-top-left-radius: 0px;
-     border-top-left-radius: 0px;
-    -moz-border-radius-topright: 0px;
-    -webkit-border-top-right-radius: 0px;
-    border-top-right-radius: 0px;
-    font-size: 20px;
+    border-top: 1px solid @borderColor;
+    border-bottom-left-radius: @brBottomLeft;
+    border-bottom-right-radius: @brBottomRight;
+    border-top-left-radius: @brTopLeft;
+    border-top-right-radius: @brTopRight;
+    font-size: 24px;
     padding: 4px 7px;
     outline: 0;
     -webkit-appearance: none;
-    transform: translateX(-50%);
-    -webkit-transform: translateX(-50%);
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px 0px;
+    transform: translateX(-50%) translateY(-100%);
+    -webkit-transform: translateX(-50%) translateY(-100%);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px 0px;
+    background-color: rgb(234, 246, 255);
+    color: rgb(0, 102, 174);
+    font-weight: bold;
 }
 .tick-arrow {
     position: absolute;
+    top: -1px;
+    z-index: 11;
     left: ~"calc(50% - 10px)";
 	width: 0; 
 	height: 0; 
-    top: ~"calc(100% - 10px)";
+    //top: ~"calc(100% - 10px)";
 	border-left: 10px solid transparent;
 	border-right: 10px solid transparent;
-	border-bottom: 10px solid #fff;
+	border-top: 10px solid rgb(234, 246, 255);
+}
+.tick-arrow-shadow {
+    position: absolute;
+    z-index: 10;
+    left: ~"calc(50% - 12px)";
+	width: 0; 
+	height: 0; 
+	border-left: 12px solid transparent;
+	border-right: 12px solid transparent;
+	border-top: 12px solid rgba(0, 0, 0, 0.05);
 }
 .tick {
     position: absolute;
@@ -66,12 +79,12 @@
     transform: translateY(-50%) translateX(-50%);
     -webkit-transform: translateY(-50%) translateX(-50%);
     background-color: @sliderColor;
-    color: #FFFFFF;
+    color: #3389C7;
     font-style: italic;
 }
 .tick-line {
     position: absolute;
     height: 100%;
-    background-color: #EAEAEA;
+    background-color: #75ABD2;
     width: 1px;
 }

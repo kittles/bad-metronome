@@ -29,6 +29,9 @@ Slider.prototype.makeSlider = function makeSlider () {
     this.slider.insertBefore(this.input);
     var tickArrow = $(document.createElement("div"));
     tickArrow.attr("class", "tick-arrow");
+    var tickArrowShadow = $(document.createElement("div"));
+    tickArrowShadow.attr("class", "tick-arrow-shadow");
+    this.el.append(tickArrowShadow);
     this.el.append(tickArrow);
     this.updateSlider();
 };

@@ -4,10 +4,7 @@
   margin: 5px;
   height: 50px;
   border-radius: 10px;
-  border-top: 1px solid #a3ff0d;
-  border-left: 1px solid #48e80c;
-  border-right: 1px solid #48e80c;
-  border-bottom: 1px solid #0ce857;
+  border: 1px solid rgba(0, 0, 0, 0.4);
   text-align: center;
   cursor: pointer;
 }
@@ -34,10 +31,11 @@
   height: 200px;
   width: 100%;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: #2e522c;
 }
 .metronome-ui-container {
-  height: 100px;
+  padding-top: 30px;
+  padding-bottom: 70px;
   width: 100%;
 }
 .beat-row {
@@ -57,12 +55,12 @@
   position: relative;
   top: 5%;
   left: 5%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: #5db65a;
   cursor: pointer;
   transition: background-color 0.3s ease-out;
 }
 .muted {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 .current-beat {
   background-color: #ffffff;
@@ -74,11 +72,13 @@
   height: 100px;
   width: 100%;
   z-index: 10;
+  border-top: 1px solid #9fd7ff;
+  border-bottom: 1px solid #5f99c3;
 }
 .slider-slider {
   position: absolute;
   height: 100px;
-  background-color: #d2d2d2;
+  background-color: #97c0dd;
   box-shadow: rgba(0, 0, 0, 0.51) 0px 8px 8px -9px;
 }
 .slider-transition {
@@ -86,42 +86,47 @@
 }
 .slider-input {
   position: absolute;
-  width: 100px;
-  top: 100%;
+  width: 70px;
   text-align: center;
-  border-right: 1px solid rgba(0, 0, 0, 0.4);
-  border-left: 1px solid rgba(0, 0, 0, 0.4);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-  border-top: 1px solid #fff;
-  -moz-border-radius-bottomleft: 10px;
-  -webkit-border-bottom-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  -moz-border-radius-bottomright: 10px;
-  -webkit-border-bottom-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  -moz-border-radius-topleft: 0px;
-  -webkit-border-top-left-radius: 0px;
-  border-top-left-radius: 0px;
-  -moz-border-radius-topright: 0px;
-  -webkit-border-top-right-radius: 0px;
-  border-top-right-radius: 0px;
-  font-size: 20px;
+  border-right: 1px solid #9fd7ff;
+  border-left: 1px solid #9fd7ff;
+  border-bottom: 1px solid #9fd7ff;
+  border-top: 1px solid #9fd7ff;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 24px;
   padding: 4px 7px;
   outline: 0;
   -webkit-appearance: none;
-  transform: translateX(-50%);
-  -webkit-transform: translateX(-50%);
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px 0px;
+  transform: translateX(-50%) translateY(-100%);
+  -webkit-transform: translateX(-50%) translateY(-100%);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px 0px;
+  background-color: #eaf6ff;
+  color: #0066ae;
+  font-weight: bold;
 }
 .tick-arrow {
   position: absolute;
+  top: -1px;
+  z-index: 11;
   left: calc(50% - 10px);
   width: 0;
   height: 0;
-  top: calc(100% - 10px);
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid #fff;
+  border-top: 10px solid #eaf6ff;
+}
+.tick-arrow-shadow {
+  position: absolute;
+  z-index: 10;
+  left: calc(50% - 12px);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid rgba(0, 0, 0, 0.05);
 }
 .tick {
   position: absolute;
@@ -133,14 +138,14 @@
   top: 50%;
   transform: translateY(-50%) translateX(-50%);
   -webkit-transform: translateY(-50%) translateX(-50%);
-  background-color: #d2d2d2;
-  color: #FFFFFF;
+  background-color: #97c0dd;
+  color: #3389C7;
   font-style: italic;
 }
 .tick-line {
   position: absolute;
   height: 100%;
-  background-color: #EAEAEA;
+  background-color: #75ABD2;
   width: 1px;
 }
 body {
@@ -151,14 +156,4 @@ body {
   -o-user-select: none;
   overflow-x: hidden;
   font-family: 'Ubuntu', sans-serif;
-  background-color: #ae75ff;
-}
-h1 {
-  font-size: 3em;
-  color: #75cfff;
-}
-.header {
-  width: 100%;
-  height: 80px;
-  background-color: white;
 }
