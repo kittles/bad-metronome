@@ -31,7 +31,7 @@
   height: 200px;
   width: 100%;
   text-align: center;
-  background-color: #2e522c;
+  background-color: #2C4552;
 }
 .metronome-ui-container {
   padding-top: 30px;
@@ -55,20 +55,26 @@
   position: relative;
   top: 5%;
   left: 5%;
-  background-color: #5db65a;
+  background-color: rgba(255, 118, 118, 0.87);
   cursor: pointer;
   transition: background-color 0.3s ease-out;
+  box-shadow: 0px 3px 15px -1px rgba(0, 0, 0, 0.4);
 }
 .beat-text {
   position: absolute;
   width: 100%;
-  top: calc(50% - 7px);
-  font-size: 14px;
+  top: calc(50% - 8px);
+  font-size: 16px;
   z-index: 20;
   text-align: center;
+  color: #8B0000;
 }
 .muted {
   background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+.beat-text-muted {
+  color: black !important;
 }
 .current-beat {
   background-color: #ffffff;
@@ -82,11 +88,12 @@
   z-index: 10;
   border-top: 1px solid #9fd7ff;
   border-bottom: 1px solid #5f99c3;
+  cursor: pointer;
 }
 .slider-slider {
   position: absolute;
   height: 100px;
-  background-color: #97c0dd;
+  background-color: #b0deff;
   box-shadow: rgba(0, 0, 0, 0.51) 0px 8px 8px -9px;
 }
 .slider-transition {
@@ -146,7 +153,7 @@
   top: 50%;
   transform: translateY(-50%) translateX(-50%);
   -webkit-transform: translateY(-50%) translateX(-50%);
-  background-color: #97c0dd;
+  background-color: #b0deff;
   color: #3389C7;
   font-style: italic;
 }
@@ -164,4 +171,10 @@ body {
   -o-user-select: none;
   overflow-x: hidden;
   font-family: 'Ubuntu', sans-serif;
+  opacity: 1;
+  transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.raised {
+  transform: translateY(-5%);
+  opacity: 0;
 }

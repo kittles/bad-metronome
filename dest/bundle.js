@@ -10813,10 +10813,12 @@ Beat.prototype.off = function off () {
 Beat.prototype.mute = function mute () {
     this.model.muted = true;
     this.view.beat.addClass("muted");
+    this.view.beatText.addClass("beat-text-muted");
 };
 Beat.prototype.unmute = function unmute () {
     this.model.muted = false;
     this.view.beat.removeClass("muted");
+    this.view.beatText.removeClass("beat-text-muted");
 };
 Beat.prototype.toggleMute = function toggleMute () {
     if (this.model.muted) {
@@ -11100,6 +11102,9 @@ function init () {
     var mc = $(".metronome-container");
     var height = $(window).height() - mc.offset().top;
     mc.css("height", height);
+    setTimeout(function () {
+        $("body").removeClass("raised");
+    }, 500);
 }
 
 },{"./controllers/Beat.js":3,"./controllers/Metronome.js":4,"./controllers/Slider.js":5,"./controllers/Spinner.js":6,"jquery":1,"underscore":2}],8:[function(require,module,exports){
@@ -11425,6 +11430,8 @@ module.exports = Slider;
 
 function Slider (model) {
     this.model = model;
+    this.model.scale = Math.floor(($(window).width() / 500)) * 100;
+    this.model.scale = Math.max(100, this.model.scale);
     this.el = $(document.createElement("div"));
     this.el.attr("class", "slider-container");
     this.slider = null;

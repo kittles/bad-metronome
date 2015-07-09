@@ -5,6 +5,8 @@ module.exports = Slider;
 
 function Slider (model) {
     this.model = model;
+    this.model.scale = Math.floor(($(window).width() / 500)) * 100;
+    this.model.scale = Math.max(100, this.model.scale);
     this.el = $(document.createElement("div"));
     this.el.attr("class", "slider-container");
     this.slider = null;

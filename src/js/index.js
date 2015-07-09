@@ -43,4 +43,7 @@ function init () {
     var mc = $(".metronome-container");
     var height = $(window).height() - mc.offset().top;
     mc.css("height", height);
+    setTimeout(function () {
+        $("body").removeClass("raised");
+    }, 500);
 }

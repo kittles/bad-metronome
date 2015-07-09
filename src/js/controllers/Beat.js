@@ -50,10 +50,12 @@ Beat.prototype.off = function off () {
 Beat.prototype.mute = function mute () {
     this.model.muted = true;
     this.view.beat.addClass("muted");
+    this.view.beatText.addClass("beat-text-muted");
 };
 Beat.prototype.unmute = function unmute () {
     this.model.muted = false;
     this.view.beat.removeClass("muted");
+    this.view.beatText.removeClass("beat-text-muted");
 };
 Beat.prototype.toggleMute = function toggleMute () {
     if (this.model.muted) {
