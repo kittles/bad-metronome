@@ -29,3 +29,4 @@ default beat sound setting
 boolean flash beat setting
 reset to defaults
 pause on lose focus
+beat enter and leave transitions

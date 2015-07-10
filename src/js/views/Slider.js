@@ -70,8 +70,9 @@ Slider.prototype.updateSlider = function updateSlider () {
     var xTranslate = this.model.value * this.getScaleOnScreen();
     var width = this.el.width() ? this.el.width() : $(document).width();
     xTranslate -= width / 2;
+    xTranslate *= -1;
     this.slider.css({
-        transform: "translateX(-" + xTranslate + "px)"
+        transform: "translateX(" + xTranslate + "px)"
     });
     this.input.val(+this.model.value.toFixed(0));
 };

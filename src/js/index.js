@@ -24,14 +24,14 @@ $(document).ready(function () {
 });
 
 function init () {
-    console.log("sup jobless roach =)");
+    var container = $(".body-container");
     var metronome = new Metronome({
         ctx: ctx                            
     });
     var slider = new Slider(_.throttle(updateBPM, 100));
-    $("body").append(metronome.view.uiContainer);
-    $(document.body).append(slider.view.el);
-    $("body").append(metronome.view.container);
+    container.append(metronome.view.uiContainer);
+    container.append(slider.view.el);
+    container.append(metronome.view.container);
     _.times(4, function () {
         metronome.addBeat({
             ctx: ctx                
@@ -40,10 +40,7 @@ function init () {
     function updateBPM () {
         metronome.setBpm(slider.model.value);
     }
-    var mc = $(".metronome-container");
-    var height = $(window).height() - mc.offset().top;
-    mc.css("height", height);
     setTimeout(function () {
-        $("body").removeClass("raised");
+        container.removeClass("raised");
     }, 500);
 }

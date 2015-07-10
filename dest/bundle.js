@@ -11083,14 +11083,14 @@ $(document).ready(function () {
 });
 
 function init () {
-    console.log("sup jobless roach =)");
+    var container = $(".body-container");
     var metronome = new Metronome({
         ctx: ctx                            
     });
     var slider = new Slider(_.throttle(updateBPM, 100));
-    $("body").append(metronome.view.uiContainer);
-    $(document.body).append(slider.view.el);
-    $("body").append(metronome.view.container);
+    container.append(metronome.view.uiContainer);
+    container.append(slider.view.el);
+    container.append(metronome.view.container);
     _.times(4, function () {
         metronome.addBeat({
             ctx: ctx                
@@ -11103,7 +11103,7 @@ function init () {
     var height = $(window).height() - mc.offset().top;
     mc.css("height", height);
     setTimeout(function () {
-        $("body").removeClass("raised");
+        container.removeClass("raised");
     }, 500);
 }
 
@@ -11495,8 +11495,9 @@ Slider.prototype.updateSlider = function updateSlider () {
     var xTranslate = this.model.value * this.getScaleOnScreen();
     var width = this.el.width() ? this.el.width() : $(document).width();
     xTranslate -= width / 2;
+    xTranslate *= -1;
     this.slider.css({
-        transform: "translateX(-" + xTranslate + "px)"
+        transform: "translateX(" + xTranslate + "px)"
     });
     this.input.val(+this.model.value.toFixed(0));
 };
