@@ -2,20 +2,21 @@ var $ = require("jquery");
 var _ = require("underscore");
 var MetronomeModel = require("../models/Metronome.js");
 var MetronomeView = require("../views/Metronome.js");
+var Slider = require("./Slider.js");
 var Beat = require("./Beat.js");
 
 module.exports = Metronome;
 
-function Metronome (settings) {
-    if (!settings) {
-        var settings = {};
-    }
-    this.ctx = settings.ctx;
-    this.model = new MetronomeModel(settings);
-    this.view = new MetronomeView(settings);
-    this.view.addBtn.el.click(this.addBeat.bind(this));
-    this.view.removeBtn.el.click(this.removeBeat.bind(this));
-    this.view.toggleBtn.el.click(this.toggle.bind(this));
+function Metronome (ctx) {
+    this.ctx = ctx;
+    this.model = new MetronomeModel();
+    this.view = new MetronomeView();
+    
+    this.slider = new Slider(this);
+
+    this.view.addBtn.click(this.addBeat.bind(this));
+    this.view.removeBtn.click(this.removeBeat.bind(this));
+    this.view.toggleBtn.click(this.toggle.bind(this));
 
     this.scheduledBeatNumber = -1; // so model.beat reflects whats currently happening
     this.scheduledBeats = []; // timeout ids

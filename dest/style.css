@@ -80,7 +80,7 @@
   background-color: #ffffff;
   transition-property: none;
 }
-.slider-container {
+#m-slider {
   position: relative;
   background-color: #b0deff;
   height: 100px;
@@ -90,7 +90,7 @@
   border-bottom: 1px solid #5f99c3;
   cursor: pointer;
 }
-.slider-slider {
+#m-slider-slider {
   position: absolute;
   height: 100px;
   background-color: #b0deff;
@@ -99,7 +99,7 @@
 .slider-transition {
   transition: all 0.8s ease-in-out;
 }
-.slider-input {
+#m-slider-input {
   position: absolute;
   width: 70px;
   text-align: center;
@@ -122,7 +122,7 @@
   color: #0066ae;
   font-weight: bold;
 }
-.tick-arrow {
+#m-slider-tick-arrow {
   position: absolute;
   top: -1px;
   z-index: 11;
@@ -133,7 +133,7 @@
   border-right: 10px solid transparent;
   border-top: 10px solid #eaf6ff;
 }
-.tick-arrow-shadow {
+#m-slider-tick-arrow-shadow {
   position: absolute;
   z-index: 10;
   left: calc(50% - 12px);

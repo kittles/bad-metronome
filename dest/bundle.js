@@ -10835,25 +10835,26 @@ Beat.prototype.setSound = function setSound (value) {
     this.model.sound = value; 
 };
 
-},{"../models/Beat.js":8,"../utils/Drag.js":12,"../views/Beat.js":13,"jquery":1}],4:[function(require,module,exports){
+},{"../models/Beat.js":7,"../utils/Drag.js":11,"../views/Beat.js":13,"jquery":1}],4:[function(require,module,exports){
 var $ = require("jquery");
 var _ = require("underscore");
 var MetronomeModel = require("../models/Metronome.js");
 var MetronomeView = require("../views/Metronome.js");
+var Slider = require("./Slider.js");
 var Beat = require("./Beat.js");
 
 module.exports = Metronome;
 
-function Metronome (settings) {
-    if (!settings) {
-        var settings = {};
-    }
-    this.ctx = settings.ctx;
-    this.model = new MetronomeModel(settings);
-    this.view = new MetronomeView(settings);
-    this.view.addBtn.el.click(this.addBeat.bind(this));
-    this.view.removeBtn.el.click(this.removeBeat.bind(this));
-    this.view.toggleBtn.el.click(this.toggle.bind(this));
+function Metronome (ctx) {
+    this.ctx = ctx;
+    this.model = new MetronomeModel();
+    this.view = new MetronomeView();
+    
+    this.slider = new Slider(this);
+
+    this.view.addBtn.click(this.addBeat.bind(this));
+    this.view.removeBtn.click(this.removeBeat.bind(this));
+    this.view.toggleBtn.click(this.toggle.bind(this));
 
     this.scheduledBeatNumber = -1; // so model.beat reflects whats currently happening
     this.scheduledBeats = []; // timeout ids
@@ -10954,7 +10955,7 @@ Metronome.prototype.toggle = function toggle () {
     }
 };
 
-},{"../models/Metronome.js":9,"../views/Metronome.js":15,"./Beat.js":3,"jquery":1,"underscore":2}],5:[function(require,module,exports){
+},{"../models/Metronome.js":8,"../views/Metronome.js":14,"./Beat.js":3,"./Slider.js":5,"jquery":1,"underscore":2}],5:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var SliderView = require("../views/Slider.js");
@@ -10963,151 +10964,85 @@ var Drag = require("../utils/Drag.js");
 
 module.exports = Slider;
 
-function Slider (dragCallback) {
+function Slider (parent) {
     var that = this;
+    this.parent = parent;
     this.model = new SliderModel();
-    this.view = new SliderView(this.model);
-    this.dragCallback = dragCallback;
+    this.view = new SliderView();
+    this.view.sizeSlider(this.model);
+    this.view.addTicks(this.model);
+
+    //this.dragCallback = dragCallback;
     this.drag = new Drag({
         el: this.view.slider, 
         ondrag: ondrag.bind(this)
     });
 }
+Slider.prototype.setPxPerBpm = function setPxPerBpm (value) {
+    this.model.setPxPerBpm(value);
+    this.view.addTicks(this.model);
+    // update view
+};
+Slider.prototype.setValue = function setValue (value) {
+    this.model.setValue(value);
+    this.view.updateSliderPosition(this.model);
+};
 function ondrag () {
-    var increment = this.drag.oldPoint.x - this.drag.newPoint.x;
-    increment /= this.view.el.width();
-    increment *= this.model.scale;
-    this.model.setValue(this.model.value + increment);
-    this.view.updateSlider();
-    if (this.dragCallback) {
-        this.dragCallback();
-    }
+    // update this to use correct model attribs
+
+    var increment = (this.drag.oldPoint.x - this.drag.newPoint.x) / this.model.pxPerBpm;
+    this.setValue(this.model.value + increment);
+    //this.view.updateSlider();
+    //if (this.dragCallback) {
+    //    this.dragCallback();
+    //}
 }
 
-},{"../models/Slider.js":10,"../utils/Drag.js":12,"../views/Slider.js":16,"jquery":1,"underscore":2}],6:[function(require,module,exports){
-var _ = require("underscore");
-var $ = require("jquery");
-var SpinnerView = require("../views/Spinner.js");
-
-module.exports = Spinner;
-
-function Spinner () {
-    var that = this;
-    this.dragging = false;
-    this.view = new SpinnerView();
-    this.center = null;
-
-    this.view.el.mousedown(function (e) {
-        that.oldPoint = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        $(window).mousemove(ondrag.bind(this));
-        $(window).one("mouseup", function () {
-            that.dragging = false;
-            $(window).unbind("mousemove");
-        });
-    });
-    var c = 0;
-    function ondrag (e) {
-        that.dragging = true;
-        that.newPoint = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        // do the rotation
-        var center = getCenter(that.view.el);
-        var rotation = getRotation(that.oldPoint, that.newPoint, center);
-        that.view.rotate(rotation);
-        that.oldPoint = that.newPoint;
-    }
-}
-function getCenter (el) {
-    var offset = el.offset();
-    var width = el.width();
-    var height = el.height();
-    var centerX = offset.left + width / 2;
-    var centerY = offset.top + height / 2;
-    return {
-        x: centerX,
-        y: centerY
-    };
-}
-function getRotation (oldPoint, newPoint, center) {
-    var a = getDistance(oldPoint, center);
-    var b = getDistance(newPoint, center);
-    var c = getDistance(newPoint, oldPoint);
-    var rads = Math.acos((Math.pow(a, 2) + Math.pow(b, 2) - Math.pow(c, 2)) / (2 * a * b));
-    return toDegrees(rads) * getDirection(center, oldPoint, newPoint);
-}
-function getDirection (a, b, c) {
-    // a center
-    // b old point
-    // c new point
-    var clockwise = ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
-    return clockwise ? 1 : -1;
-}
-function getDistance (p1, p2) {
-    var asq = Math.pow(p1.x - p2.x, 2);
-    var bsq = Math.pow(p1.y - p2.y, 2);
-    return Math.sqrt(asq + bsq);
-}
-function toDegrees (angle) {
-    return angle * (180 / Math.PI);
-}
-
-},{"../views/Spinner.js":17,"jquery":1,"underscore":2}],7:[function(require,module,exports){
+},{"../models/Slider.js":9,"../utils/Drag.js":11,"../views/Slider.js":15,"jquery":1,"underscore":2}],6:[function(require,module,exports){
 /* global AudioContext */
 var $ = require("jquery");
 var _ = require("underscore");
 var Beat = require("./controllers/Beat.js");
 var Metronome = require("./controllers/Metronome.js");
-var Spinner = require("./controllers/Spinner.js");
 var Slider = require("./controllers/Slider.js");
-
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
-ctx.masterGain = ctx.createGain();
-ctx.masterGain.connect(ctx.destination);
 
-// unlock web audio and initialize app
-$(document).ready(function () {   
-    $(window).one("touchstart mousedown", function () {
-        var buffer = ctx.createBuffer(1, 1, 22050);
-        var source = ctx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(ctx.destination);
-        source.start(0);
-    });
-    init();
-});
+
+$(document).ready(init);
+    
 
 function init () {
-    var container = $(".body-container");
-    var metronome = new Metronome({
-        ctx: ctx                            
-    });
-    var slider = new Slider(_.throttle(updateBPM, 100));
-    container.append(metronome.view.uiContainer);
-    container.append(slider.view.el);
-    container.append(metronome.view.container);
-    _.times(4, function () {
-        metronome.addBeat({
-            ctx: ctx                
-        });
-    });
-    function updateBPM () {
-        metronome.setBpm(slider.model.value);
-    }
-    var mc = $(".metronome-container");
-    var height = $(window).height() - mc.offset().top;
-    mc.css("height", height);
-    setTimeout(function () {
-        container.removeClass("raised");
-    }, 500);
+    ctx.masterGain = ctx.createGain();
+    ctx.masterGain.connect(ctx.destination);
+    $(window).one("touchstart mousedown", unlockAudio);
+    //var metronome = new Metronome({
+    //    ctx: ctx                            
+    //});
+    window.slider = new Slider(null);
+}
+function unlockAudio () {
+    var buffer = ctx.createBuffer(1, 1, 22050);
+    var source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
 }
 
-},{"./controllers/Beat.js":3,"./controllers/Metronome.js":4,"./controllers/Slider.js":5,"./controllers/Spinner.js":6,"jquery":1,"underscore":2}],8:[function(require,module,exports){
+//var slider = new Slider(_.throttle(updateBPM, 100));
+//container.append(metronome.view.uiContainer);
+//container.append(slider.view.el);
+//container.append(metronome.view.container);
+//_.times(4, function () {
+//    metronome.addBeat({
+//        ctx: ctx                
+//    });
+//});
+//function updateBPM () {
+//    metronome.setBpm(slider.model.value);
+//}
+
+},{"./controllers/Beat.js":3,"./controllers/Metronome.js":4,"./controllers/Slider.js":5,"jquery":1,"underscore":2}],7:[function(require,module,exports){
 var Sound = require("./Sound.js");
 
 module.exports = Beat;
@@ -11133,7 +11068,7 @@ Beat.prototype.setVolume = function setVolue (value) {
     this.sound.gain.gain.value = this.volume / 100;
 };
 
-},{"./Sound.js":11}],9:[function(require,module,exports){
+},{"./Sound.js":10}],8:[function(require,module,exports){
 var $ = require("jquery");
 
 module.exports = Metronome;
@@ -11151,32 +11086,43 @@ Metronome.prototype.msPerBeat = function msPerBeat () {
     return 1000 * 60 / this.bpm;
 };
 
-},{"jquery":1}],10:[function(require,module,exports){
+},{"jquery":1}],9:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
+var util = require("../utils/Util.js");
+
+// never space bpm closer than this many px together
+var MIN_PX_PER_BPM = 3.5;
+
+// never space bpm further than this many px apart
+var MAX_PX_PER_BPM = 5;
+
+// show approximately this many ticks on slider
+var TICKS_ON_SCREEN = 6;
 
 module.exports = Slider;
 
-function Slider (settings) {
-    if (!settings) {
-        var settings = {};
-    }
+function Slider () {
     this.value = 120;
     this.min = 20;
-    this.max = 2000;
-    this.scale = 100;
+    this.max = 1000;
+    this.tickSpace = null;
+    this.setPxPerBpm(2);
 }
 Slider.prototype.setValue = function setValue (value) {
-    if (value < this.min) {
-        value = this.min;
-    }
-    if (value > this.max) {
-        value = this.max;
-    }
-    this.value = value;
+    this.value = util.clamp(this.min, this.max, value);
+};
+Slider.prototype.setPxPerBpm = function setPxPerBpm (value) {
+    this.pxPerBpm = util.clamp(MIN_PX_PER_BPM, MAX_PX_PER_BPM, value);
+    this.tickSpace = this.getTickSpace();
+};
+Slider.prototype.getTickSpace = function getTickSpace () {
+    // space in bpm
+    var space = ($(window).width() / this.pxPerBpm) / TICKS_ON_SCREEN;
+    return 5 * Math.round(space / 5);
 };
 
-},{"jquery":1,"underscore":2}],11:[function(require,module,exports){
+},{"../utils/Util.js":12,"jquery":1,"underscore":2}],10:[function(require,module,exports){
 var $ = require("jquery");
 
 module.exports = Sound;
@@ -11215,7 +11161,7 @@ Sound.prototype.play = function play () {
     this.source.start(0);
 };
 
-},{"jquery":1}],12:[function(require,module,exports){
+},{"jquery":1}],11:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 
@@ -11296,8 +11242,33 @@ function contain (e) {
     e.preventDefault();
 }
 
+},{"jquery":1,"underscore":2}],12:[function(require,module,exports){
+var _ = require("underscore");
+var $ = require("jquery");
+
+var Util = {
+    newDiv: newDiv,
+    clamp: clamp
+};
+
+function newDiv (className) {
+    return $("<div>", {class: className});
+}
+function clamp (min, max, value) {
+    if (value < min) {
+        value = min;
+    }
+    if (value > max) {
+        value = max;
+    }
+    return value;
+}
+
+module.exports = Util;
+
 },{"jquery":1,"underscore":2}],13:[function(require,module,exports){
 var $ = require("jquery");
+var util = require("../utils/Util.js");
 
 module.exports = Beat;
 
@@ -11307,17 +11278,11 @@ function Beat () {
     this.translateX = 0;
     this.scaleY = 1;
 
-    this.beat = $(document.createElement("div"));
-    this.beat.addClass("beat");
-
-    this.beatText = $(document.createElement("div"));
-    this.beatText.addClass("beat-text");
-
-    this.beatContainer = $(document.createElement("div"));
-    this.beatContainer.addClass("beat-container");
+    this.beat = util.newDiv("beat");
+    this.beatText = util.newDiv("beat-text");
+    this.beatContainer = util.newDiv("beat-container");
     this.beatContainer.append(this.beatText);
     this.beatContainer.append(this.beat);
-
     this.drawBeat();
 }
 Beat.prototype.setNumber = function setNumber (value) {
@@ -11350,65 +11315,30 @@ Beat.prototype.drawBeat = function drawBeat () {
     });
 };
 
-},{"jquery":1}],14:[function(require,module,exports){
+},{"../utils/Util.js":12,"jquery":1}],14:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
-
-module.exports = Button;
-
-function Button (className) {
-    this.el = $(document.createElement("div"));
-    this.textContainer = $(document.createElement("div"));
-    this.el.append(this.textContainer);
-    this.el.attr("class", "btn " + className);
-    this.textContainer.attr("class", "btn-text-container");
-}
-
-},{"jquery":1,"underscore":2}],15:[function(require,module,exports){
-var _ = require("underscore");
-var $ = require("jquery");
-var Button = require("./Button.js");
 
 var MAX_BEAT_SIZE = 120;
 
 module.exports = Metronome;
 
 function Metronome () {
-    this.container = $(document.createElement("div"));
-    this.container.attr("class", "metronome-container");
-    this.uiContainer = $(document.createElement("div"));
-    this.uiContainer.attr("class", "metronome-ui-container");
-    this.rows = [];
-    this.addBtn = new Button("add-btn");
-    this.addBtn.textContainer.text("+");
-    this.removeBtn = new Button("remove-btn");
-    this.removeBtn.textContainer.text("-");
-    this.toggleBtn = new Button("toggle-btn");
-    this.toggleBtn.textContainer.text("Toggle");
-    this.uiContainer.append(this.removeBtn.el);
-    this.uiContainer.append(this.addBtn.el);
-    this.uiContainer.append(this.toggleBtn.el);
-
-    // handle orientation change
+    this.container = $(".m-container").first();
+    this.ui = $(".m-ui-container").first();
+    this.slider = $(".m-slider-container").first();
+    this.beats = $(".m-beats-container").first();
+    this.addBtn = $(".m-ui-add-beat").first();
+    this.removeBtn = $(".m-ui-remove-beat").first();
+    this.toggleBtn = $(".m-ui-toggle").first();
 }
-Metronome.prototype.makeRow = function makeRow () {
-    var row = $(document.createElement("div"));
-    row.attr("class", "beat-row");
-    row.css({
-        width: 0,
-        height: 100
-    });
-    this.rows.push(row);
-    this.container.append(row);
-    return row;
-};
 Metronome.prototype.addBeat = function addBeat (beat) {
-    this.resizeBeats(this.container.children().add(beat.view.beatContainer));
-    this.container.append(beat.view.beatContainer);
+    this.resizeBeats(this.beats.children().add(beat.view.beatContainer));
+    this.beats.append(beat.view.beatContainer);
 };
 Metronome.prototype.removeBeat = function removeBeat () {
-    this.container.children().last().remove();
-    this.resizeBeats(this.container.children());
+    this.beats.children().last().remove();
+    this.resizeBeats(this.beats.children());
 };
 Metronome.prototype.resizeBeats = function resizeBeats (beats) {
     var width = $(window).width();
@@ -11422,124 +11352,50 @@ Metronome.prototype.resizeBeats = function resizeBeats (beats) {
     }
 };
 
-},{"./Button.js":14,"jquery":1,"underscore":2}],16:[function(require,module,exports){
+},{"jquery":1,"underscore":2}],15:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
+var util = require("../utils/Util.js");
 
 module.exports = Slider;
 
-function Slider (model) {
-    this.model = model;
-    this.model.scale = Math.floor(($(window).width() / 500)) * 100;
-    this.model.scale = Math.max(100, this.model.scale);
-    this.el = $(document.createElement("div"));
-    this.el.attr("class", "slider-container");
-    this.slider = null;
-    this.makeInput();
-    this.makeSlider();
-    this.addTicks();
-    this.updateSlider();
+function Slider () {
+    this.el = $("#m-slider").first();
+    this.slider = $("#m-slider-slider").first();
+    this.input = $("#m-slider-input").first();
+    this.tickArrow = $("#m-slider-tick-arrow").first();
+    this.tickArrowShadow = $("#m-slider-tick-arrow-shadow").first();
 }
-Slider.prototype.getScaleOnScreen = function getScaleOnScreen () {
-    // how much is 1px worth of value
-    return this.slider.width() / (this.model.max - this.model.min);
+Slider.prototype.updateSliderPosition = function updateSliderPosition (model) {
+    var xOffset = -1 * model.value * model.pxPerBpm;
+    console.log(xOffset);
+    this.slider.css("transform", "translateX(" + xOffset + "px)");
 };
-Slider.prototype.makeSlider = function makeSlider () {
-    this.slider = $(document.createElement("div"));
-    this.slider.attr("class", "slider-slider");
-    var width = this.el.width() > 0 ? this.el.width() : $(document).width();
-    this.slider.css({
-        width: width * ((this.model.max - this.model.min) / this.model.scale),
-        transform: "translateX(" + (-10 * this.model.value) + ")"
-    });
-    //this.el.append(this.slider);
-    this.slider.insertBefore(this.input);
-    var tickArrow = $(document.createElement("div"));
-    tickArrow.attr("class", "tick-arrow");
-    var tickArrowShadow = $(document.createElement("div"));
-    tickArrowShadow.attr("class", "tick-arrow-shadow");
-    this.el.append(tickArrowShadow);
-    this.el.append(tickArrow);
-    this.updateSlider();
+Slider.prototype.sizeSlider = function sizeSlider (model) {
+    var width = (model.max - model.min) * model.pxPerBpm;
+    this.slider.css("width", width);
 };
-Slider.prototype.makeInput = function makeInput () {
-    this.input = $(document.createElement("input"));
-    this.input.attr("class", "slider-input");
-    this.input.val(+this.model.value);
-    this.el.append(this.input);
-    $(this.input).on("change", this.onInputChange.bind(this));
-};
-Slider.prototype.onInputChange = function onInputChange () {
-    var value = parseInt(this.input.val());
-    if (!isNaN(value)) {
-        this.model.value = value;
-        this.slider.addClass("slider-transition");
-        this.updateSlider();
-        var that = this;
-        setTimeout(function () {
-            that.slider.removeClass("slider-transition");
-        }, 800);
+Slider.prototype.addTicks = function addTicks (model) {
+    // should clear old ticks?
+    this.slider.children().remove();
+    var x = model.min;
+    while (x < model.max) {
+        this.makeTick(this.slider, model, x);
+        x += model.tickSpace;
     }
 };
-Slider.prototype.addTicks = function addTicks () {
-    var scale = this.model.scale;           
-    var value = this.model.value;
-    var tickSpace = 25;
-    var start = this.model.min;
-    while (start < this.model.max) {
-        this.makeTick(start, this.slider);
-        start += tickSpace;
-    }
-};
-Slider.prototype.updateSlider = function updateSlider () {
-    var xTranslate = this.model.value * this.getScaleOnScreen();
-    var width = this.el.width() ? this.el.width() : $(document).width();
-    xTranslate -= width / 2;
-    xTranslate *= -1;
-    this.slider.css({
-        transform: "translateX(" + xTranslate + "px)"
-    });
-    this.input.val(+this.model.value.toFixed(0));
-};
-Slider.prototype.makeTick = function makeTick (number, parent) {
-    var tick = $(document.createElement("div"));
-    var tickLine = $(document.createElement("div"));
-    var tickText = $(document.createElement("div"));
-    tick.attr("class", "tick");
-    tickLine.attr("class", "tick-line");
-    tickText.attr("class", "tick-text");
+Slider.prototype.makeTick = function makeTick (parent, model, number) {
+    // maybe clone frag?
+    var tick = util.newDiv("tick");
+    var tickLine = util.newDiv("tick-line");
+    var tickText = util.newDiv("tick-text");
     tick.append(tickLine);
     tick.append(tickText);
     tickText.text(+number);
     tick.css({
-        left: this.getScaleOnScreen() * number
+        left: model.pxPerBpm * (number - model.min)
     });
     parent.append(tick);
 };
 
-},{"jquery":1,"underscore":2}],17:[function(require,module,exports){
-var _ = require("underscore");
-var $ = require("jquery");
-
-module.exports = Spinner;
-
-function Spinner () {
-    this.el = $(document.createElement("div"));
-    this.rotation = 0;
-    this.el.attr("class", "spinner");
-    this.markContainer = $(document.createElement("div"));
-    this.markContainer.attr("class", "spinner-mark-container");
-    this.el.append(this.markContainer);
-    this.mark = $(document.createElement("div"));
-    this.mark.attr("class", "spinner-mark");
-    this.markContainer.append(this.mark);
-    this.el.append(this.markContainer);
-}
-Spinner.prototype.rotate = function rotate (degrees) {
-    this.rotation += degrees;
-    this.el.css({
-        transform: "rotate(" + this.rotation + "deg)"
-    });
-};
-
-},{"jquery":1,"underscore":2}]},{},[7]);
+},{"../utils/Util.js":12,"jquery":1,"underscore":2}]},{},[6]);

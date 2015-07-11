@@ -1,4 +1,5 @@
 var $ = require("jquery");
+var util = require("../utils/Util.js");
 
 module.exports = Beat;
 
@@ -8,17 +9,11 @@ function Beat () {
     this.translateX = 0;
     this.scaleY = 1;
 
-    this.beat = $(document.createElement("div"));
-    this.beat.addClass("beat");
-
-    this.beatText = $(document.createElement("div"));
-    this.beatText.addClass("beat-text");
-
-    this.beatContainer = $(document.createElement("div"));
-    this.beatContainer.addClass("beat-container");
+    this.beat = util.newDiv("beat");
+    this.beatText = util.newDiv("beat-text");
+    this.beatContainer = util.newDiv("beat-container");
     this.beatContainer.append(this.beatText);
     this.beatContainer.append(this.beat);
-
     this.drawBeat();
 }
 Beat.prototype.setNumber = function setNumber (value) {
