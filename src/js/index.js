@@ -27,3 +27,4 @@ function unlockAudio () {
     source.connect(ctx.destination);
     source.start(0);
 }
+require("./utils/Analytics.js")();

@@ -15,7 +15,7 @@ module.exports = Slider;
 function Slider () {
     this.value = 120;
     this.min = 20;
-    this.max = 400;
+    this.max = 600;
     this.tickSpace = null;
     this.setPxPerBpm(2);
 }
