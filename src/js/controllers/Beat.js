@@ -5,13 +5,10 @@ var Drag = require("../utils/Drag.js");
 
 module.exports = Beat;
 
-function Beat (settings) {
-    if (!settings) {
-        var settings = {};
-    }
-    this.model = new BeatModel(settings);
-    this.view = new BeatView(settings);
-    this.setVolume(settings.volume || 50);
+function Beat () {
+    this.model = new BeatModel();
+    this.view = new BeatView();
+    this.setVolume(50);
     this.drag = new Drag({
         el: this.view.beatContainer, 
         ondrag: ondrag.bind(this),

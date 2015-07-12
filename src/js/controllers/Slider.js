@@ -7,35 +7,39 @@ var Drag = require("../utils/Drag.js");
 module.exports = Slider;
 
 function Slider (parent) {
-    var that = this;
-    this.parent = parent;
+    this.parent = parent || {
+        setBpm: _.noop 
+    };
     this.model = new SliderModel();
     this.view = new SliderView();
     this.view.sizeSlider(this.model);
     this.view.addTicks(this.model);
-
-    //this.dragCallback = dragCallback;
+    this.setValue(this.model.value);
     this.drag = new Drag({
         el: this.view.slider, 
         ondrag: ondrag.bind(this)
     });
+    this.view.input.on("change", onSliderInputChange.bind(this));
 }
 Slider.prototype.setPxPerBpm = function setPxPerBpm (value) {
     this.model.setPxPerBpm(value);
     this.view.addTicks(this.model);
-    // update view
 };
 Slider.prototype.setValue = function setValue (value) {
     this.model.setValue(value);
-    this.view.updateSliderPosition(this.model);
+    this.view.update(this.model);
+    this.parent.setBpm(this.model.value);
 };
 function ondrag () {
-    // update this to use correct model attribs
-
     var increment = (this.drag.oldPoint.x - this.drag.newPoint.x) / this.model.pxPerBpm;
     this.setValue(this.model.value + increment);
-    //this.view.updateSlider();
-    //if (this.dragCallback) {
-    //    this.dragCallback();
-    //}
+    // tell parent
+}
+function onSliderInputChange () {
+    var value = parseInt($("#m-slider-input").val());
+    if (!isNaN(value)) {
+        this.view.slider.addClass("slider-transition");
+        this.setValue(value);
+        setTimeout(this.view.slider.removeClass.bind(this.view.slider, "slider-transition"), 800);
+    }
 }

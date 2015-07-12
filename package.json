@@ -11,6 +11,7 @@
   "dependencies": {
     "browserify": "^10.2.4",
     "es6-promise": "^2.3.0",
+    "fastclick": "^1.0.6",
     "gauss-random": "^1.0.1",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.8.0",

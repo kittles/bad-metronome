@@ -53,7 +53,7 @@ Drag.prototype.handleEnd = function handleEnd (e) {
         this.onend();
         this.dragging = false;
         window.currentEl = null;
-        $(window).unbind(END_EVENTS);
+        $(window).unbind(DRAG_EVENTS);
     }
 };
 function getCoordinates (e) {

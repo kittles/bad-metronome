@@ -3,10 +3,12 @@
   display: inline-block;
   margin: 5px;
   height: 50px;
+  line-height: 50px;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   text-align: center;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .btn:hover {
   background-color: white;
@@ -17,14 +19,17 @@
   transform: translateY(-50%);
   -webkit-transform: translateY(-50%);
 }
-.add-btn,
-.remove-btn {
+#m-ui-add-beat,
+#m-ui-remove-beat {
   width: 50px;
   font-size: 20px;
 }
-.toggle-btn {
+#m-ui-toggle {
   width: 150px;
   font-size: 20px;
+  background-color: rgba(121, 255, 121, 0.54);
+  padding: 0px 10px 0px 10px;
+  transition: background-color 0.8s ease;
 }
 .metronome-container {
   position: relative;
@@ -33,27 +38,20 @@
   text-align: center;
   background-color: #2C4552;
 }
-.metronome-ui-container {
-  padding-top: 30px;
+#m-ui {
   padding-bottom: 70px;
   width: 100%;
 }
-.beat-row {
+#m-beats {
   position: relative;
-  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 .beat-container {
-  position: relative;
   display: inline-block;
-  cursor: pointer;
   height: 100%;
-}
-.current-beat-container {
-  background-color: rgba(255, 255, 255, 0.4);
 }
 .beat {
   position: relative;
-  top: 5%;
   left: 5%;
   background-color: rgba(255, 118, 118, 0.87);
   cursor: pointer;
@@ -61,24 +59,28 @@
   box-shadow: 0px 3px 15px -1px rgba(0, 0, 0, 0.4);
 }
 .beat-text {
-  position: absolute;
+  position: relative;
   width: 100%;
   top: calc(50% - 8px);
   font-size: 16px;
   z-index: 20;
   text-align: center;
   color: #8B0000;
-}
-.muted {
-  background-color: rgba(255, 255, 255, 0.2);
-  box-shadow: none;
-}
-.beat-text-muted {
-  color: black !important;
+  cursor: pointer;
 }
 .current-beat {
   background-color: #ffffff;
   transition-property: none;
+}
+.current-beat-container {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.muted {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+.beat-text-muted {
+  color: black !important;
 }
 #m-slider {
   position: relative;
@@ -88,13 +90,13 @@
   z-index: 10;
   border-top: 1px solid #9fd7ff;
   border-bottom: 1px solid #5f99c3;
+  box-shadow: rgba(0, 0, 0, 0.51) 0px 8px 8px -9px;
   cursor: pointer;
 }
 #m-slider-slider {
   position: absolute;
   height: 100px;
   background-color: #b0deff;
-  box-shadow: rgba(0, 0, 0, 0.51) 0px 8px 8px -9px;
 }
 .slider-transition {
   transition: all 0.8s ease-in-out;
@@ -117,7 +119,6 @@
   -webkit-appearance: none;
   transform: translateX(-50%) translateY(-100%);
   -webkit-transform: translateX(-50%) translateY(-100%);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px 0px;
   background-color: #eaf6ff;
   color: #0066ae;
   font-weight: bold;
@@ -169,16 +170,17 @@ body {
   -khtml-user-select: none;
   -webkit-user-select: none;
   -o-user-select: none;
-  overflow: hidden;
   font-family: 'Ubuntu', sans-serif;
-  height: 100vh;
-  width: 100vw;
 }
 .body-container {
   transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
   opacity: 1;
   height: 100%;
   width: 100%;
+  overflow: hidden;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
 }
 .raised {
   transform: translateY(-5%);

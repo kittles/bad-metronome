@@ -2,18 +2,10 @@ var Sound = require("./Sound.js");
 
 module.exports = Beat;
 
-function Beat (settings) {
-    if (!settings) {
-        var settings = {};
-    }
-    this.sound = new Sound({
-        path: settings.sound || "/sounds/basic.wav",
-        ctx: settings.ctx                      
-    });
-    this.muted = settings.muted || false;
-    this.volume = settings.volume || 100;
-    this.sigma = settings.sigma || 0;
-    this.errorRate = settings.errorRate || 0;
+function Beat () {
+    this.sound = new Sound();
+    this.muted = false;
+    this.volume = 100;
 }
 
 Beat.prototype.setVolume = function setVolue (value) {

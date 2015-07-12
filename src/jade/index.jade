@@ -8,19 +8,19 @@ html.no-js
     meta(name='viewport', content='width=device-width, initial-scale=1.0, user-scalable=no')
     link(rel='stylesheet', href='style.css')
     link(href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css')
-    script(src="bundle.js")
   body
-    #s-container
-    #m-container
-      #m-ui.inner-container
-        h1#m-title Very Metronome
-        #m-ui-beats
-          #m-ui-add-beat.btn +
+    .body-container
+      #s-container
+      #m-container
+        #m-ui
+          h1#m-title Very Metronome
           #m-ui-remove-beat.btn -
-        #m-ui-toggle Toggle
-      #m-slider.inner-container
-        #m-slider-tick-arrow
-        #m-slider-tick-arrow-shadow
-        input#m-slider-input
-        #m-slider-slider
-      #m-beats.inner-container
+          #m-ui-add-beat.btn +
+          #m-ui-toggle.btn Toggle
+        #m-slider
+          #m-slider-tick-arrow
+          #m-slider-tick-arrow-shadow
+          input#m-slider-input
+          #m-slider-slider
+        #m-beats
+    script(src="bundle.js")

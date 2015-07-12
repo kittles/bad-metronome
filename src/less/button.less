@@ -8,10 +8,12 @@
     display: inline-block;
     margin: 5px;
     height: 50px;
+    line-height: 50px;
     border-radius: 10px;
     border: 1px solid rgba(0, 0, 0, 0.4);
     text-align: center;
     cursor: pointer;
+    touch-action: manipulation; // remove delay on IE
 }
 .btn:hover {
     background-color: white;
@@ -22,11 +24,14 @@
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
 }
-.add-btn, .remove-btn {
+#m-ui-add-beat, #m-ui-remove-beat {
     width: 50px;
     font-size: 20px;
 }
-.toggle-btn {
+#m-ui-toggle {
     width: 150px;
     font-size: 20px;
+    background-color: rgba(121, 255, 121, 0.54);
+    padding: 0px 10px 0px 10px;
+    transition: background-color 0.8s ease;
 }

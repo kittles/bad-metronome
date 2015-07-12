@@ -1,19 +1,13 @@
-.beat-row {
+#m-beats {
     position: relative;
-    margin: 0 auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 .beat-container {
-    position: relative;
     display: inline-block;
-    cursor: pointer;
     height: 100%;
-}
-.current-beat-container {
-    background-color: rgba(255, 255, 255, 0.4);
 }
 .beat {
     position: relative;
-    top: 5%;
     left: 5%;
     background-color: rgba(255, 118, 118, 0.87);
     cursor: pointer;
@@ -21,22 +15,28 @@
     box-shadow: 0px 3px 15px -1px rgba(0, 0, 0, 0.4);
 }
 .beat-text {
-    position: absolute;
+    position: relative;
     width: 100%;
     top: ~"calc(50% - 8px)";
     font-size: 16px;
     z-index: 20;
     text-align: center;
     color: #8B0000;
+    cursor: pointer;
 }
+// current
+.current-beat {
+    background-color: rgba(255, 255, 255, 1);
+    transition-property: none;
+}
+.current-beat-container {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+// muted
 .muted {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
     box-shadow: none;
 }
 .beat-text-muted {
     color: black !important;
-}
-.current-beat {
-    background-color: rgba(255, 255, 255, 1);
-    transition-property: none;
 }

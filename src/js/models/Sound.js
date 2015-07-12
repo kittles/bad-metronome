@@ -2,16 +2,11 @@ var $ = require("jquery");
 
 module.exports = Sound;
 
-function Sound (settings) {
-    if (!settings) {
-        var settings = {};
-    }
-    this.settings = settings;
-    this.path = settings.path;
-    this.ctx = settings.ctx;
+function Sound () {
+    this.path = "/sounds/wood.wav";
+    this.ctx = window.ctx;
     this.buffer = null;
     this.bufferSource = null;
-    this.output = settings.output;
     this.gain = this.ctx.createGain();
     this.volume = 100;
     this.loadSound(this.path);

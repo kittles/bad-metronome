@@ -11,10 +11,18 @@ function Slider () {
     this.tickArrow = $("#m-slider-tick-arrow").first();
     this.tickArrowShadow = $("#m-slider-tick-arrow-shadow").first();
 }
+Slider.prototype.update = function update (model) {
+    this.updateSliderPosition(model);
+    this.updateInput(model);
+};
 Slider.prototype.updateSliderPosition = function updateSliderPosition (model) {
     var xOffset = -1 * model.value * model.pxPerBpm;
-    console.log(xOffset);
+    xOffset += $(window).width() / 2;
+    xOffset += model.min * model.pxPerBpm;
     this.slider.css("transform", "translateX(" + xOffset + "px)");
+};
+Slider.prototype.updateInput = function updateInput (model) {
+    this.input.val(model.value.toFixed(0));
 };
 Slider.prototype.sizeSlider = function sizeSlider (model) {
     var width = (model.max - model.min) * model.pxPerBpm;
