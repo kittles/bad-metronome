@@ -10,17 +10,18 @@ html.no-js
     link(href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css')
   body
     .body-container
+      #rotate-screen rotate to portrait!
       #s-container
       #m-container
         #m-ui
           h1#m-title Very Metronome
           #m-ui-remove-beat.btn -
           #m-ui-add-beat.btn +
-          #m-ui-toggle.btn Toggle
+          #m-ui-toggle.btn.stopped Start
         #m-slider
           #m-slider-tick-arrow
           #m-slider-tick-arrow-shadow
-          input#m-slider-input
+          input(type='text' pattern="[0-9]*")#m-slider-input
           #m-slider-slider
         #m-beats
     script(src="bundle.js")

@@ -11732,7 +11732,8 @@ Metronome.prototype.toggle = function toggle () {
 };
 Metronome.prototype.start = function start () {
     this.model.playing = true;
-    this.view.toggleBtn.css("background-color", "rgba(255, 121, 121, 0.54)");
+    this.view.toggleBtn.addClass("started").removeClass("stopped");
+    this.view.toggleBtn.text("Stop");
     this.startTime = this.current();
     this.scheduledBeats = [];
     this.checkBuffer();
@@ -11740,7 +11741,8 @@ Metronome.prototype.start = function start () {
 };
 Metronome.prototype.stop = function stop () {
     this.model.playing = false;
-    this.view.toggleBtn.css("background-color", "rgba(121, 255, 121, 0.54)");
+    this.view.toggleBtn.addClass("stopped").removeClass("started");
+    this.view.toggleBtn.text("Start");
     clearInterval(this.bufferIntervalId);
     this.clearScheduledBeats.call(this);
     this.scheduledBeatNumber = -1;

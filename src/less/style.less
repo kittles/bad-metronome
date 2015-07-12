@@ -25,7 +25,6 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 .body-container {
-    transition: all 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000);
     opacity: 1;
     height: 100%;
     width: 100%;
@@ -33,6 +32,7 @@ body {
     position: fixed;
     height: 100vh;
     width: 100vw;
+    transition: transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000);
 }
 .raised {
     transform: translateY(-5%);
@@ -42,4 +42,22 @@ h1 {
     margin: 0px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+#rotate-screen {
+    position: absolute;
+    background-color: white;
+    line-height: 100vh;
+    z-index: 1000;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+}
+@media (orientation: landscape) {
+    #rotate-screen {
+        position: absolute;
+        z-index: 1000;
+        display: block;
+        width: 100vw;
+        height: 100vh;
+    }
 }

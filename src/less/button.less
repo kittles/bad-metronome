@@ -15,9 +15,6 @@
     cursor: pointer;
     touch-action: manipulation; // remove delay on IE
 }
-.btn:hover {
-    background-color: white;
-}
 .btn-text-container {
     position: relative;
     top: 50%;
@@ -31,7 +28,12 @@
 #m-ui-toggle {
     width: 150px;
     font-size: 20px;
-    background-color: rgba(121, 255, 121, 0.54);
     padding: 0px 10px 0px 10px;
-    transition: background-color 0.8s ease;
+    transition: background-color 0.4s ease;
+}
+.started {
+    background-color: rgba(255, 121, 121, 0.54);
+}
+.stopped {
+    background-color: rgba(121, 255, 121, 0.54);
 }
