@@ -40,7 +40,8 @@ module.exports = function (grunt) {
                     paths: [
                         "assets/css"
                     ],
-                    strictImports: true
+                    strictImports: true,
+                    compress: true
                 },
                 files: {
                     "dest/style.css": "src/less/style.less"

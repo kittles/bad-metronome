@@ -1,5 +1,3 @@
-var $ = require("jquery");
-
 module.exports = Sound;
 
 function Sound () {
@@ -13,6 +11,7 @@ function Sound () {
     this.gain.connect(this.ctx.masterGain);
 }
 Sound.prototype.loadSound = function loadSound (path) {
+    // should return a promise
     var getSound = new XMLHttpRequest();
     getSound.open("GET", path, true);
     getSound.responseType = "arraybuffer";

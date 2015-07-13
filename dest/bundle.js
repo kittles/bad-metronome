@@ -11832,7 +11832,6 @@ Slider.prototype.setValue = function setValue (value) {
 function ondrag () {
     var increment = (this.drag.oldPoint.x - this.drag.newPoint.x) / this.model.pxPerBpm;
     this.setValue(this.model.value + increment);
-    // tell parent
 }
 function onSliderInputChange () {
     var value = parseInt($("#m-slider-input").val());
@@ -11848,9 +11847,7 @@ function onSliderInputChange () {
 var $ = require("jquery");
 var _ = require("underscore");
 var attachFastclick = require("fastclick");
-var Beat = require("./controllers/Beat.js");
 var Metronome = require("./controllers/Metronome.js");
-var Slider = require("./controllers/Slider.js");
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 window.ctx = ctx;
@@ -11875,7 +11872,7 @@ function unlockAudio () {
 }
 require("./utils/Analytics.js")();
 
-},{"./controllers/Beat.js":4,"./controllers/Metronome.js":5,"./controllers/Slider.js":6,"./utils/Analytics.js":12,"fastclick":1,"jquery":2,"underscore":3}],8:[function(require,module,exports){
+},{"./controllers/Metronome.js":5,"./utils/Analytics.js":12,"fastclick":1,"jquery":2,"underscore":3}],8:[function(require,module,exports){
 var Sound = require("./Sound.js");
 
 module.exports = Beat;
@@ -11929,7 +11926,7 @@ module.exports = Slider;
 function Slider () {
     this.value = 120;
     this.min = 20;
-    this.max = 600;
+    this.max = 1000;
     this.tickSpace = null;
     this.setPxPerBpm(2);
 }
@@ -11947,8 +11944,6 @@ Slider.prototype.getTickSpace = function getTickSpace () {
 };
 
 },{"../utils/Util.js":14,"jquery":2}],11:[function(require,module,exports){
-var $ = require("jquery");
-
 module.exports = Sound;
 
 function Sound () {
@@ -11962,6 +11957,7 @@ function Sound () {
     this.gain.connect(this.ctx.masterGain);
 }
 Sound.prototype.loadSound = function loadSound (path) {
+    // should return a promise
     var getSound = new XMLHttpRequest();
     getSound.open("GET", path, true);
     getSound.responseType = "arraybuffer";
@@ -11980,7 +11976,7 @@ Sound.prototype.play = function play () {
     this.source.start(0);
 };
 
-},{"jquery":2}],12:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // jscs:disable
 module.exports = function () {
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -12074,7 +12070,6 @@ function contain (e) {
 }
 
 },{"jquery":2,"underscore":3}],14:[function(require,module,exports){
-var _ = require("underscore");
 var $ = require("jquery");
 
 var Util = {
@@ -12097,7 +12092,7 @@ function clamp (min, max, value) {
 
 module.exports = Util;
 
-},{"jquery":2,"underscore":3}],15:[function(require,module,exports){
+},{"jquery":2}],15:[function(require,module,exports){
 var $ = require("jquery");
 var util = require("../utils/Util.js");
 

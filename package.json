@@ -25,6 +25,7 @@
     "mobile-detect": "^1.2.0",
     "neat-audio": "^0.2.1",
     "normalize.css": "^3.0.3",
+    "normalize.less": "^1.0.0",
     "path": "^0.11.14",
     "underscore": "^1.8.3"
   }

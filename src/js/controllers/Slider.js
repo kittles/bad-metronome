@@ -33,7 +33,6 @@ Slider.prototype.setValue = function setValue (value) {
 function ondrag () {
     var increment = (this.drag.oldPoint.x - this.drag.newPoint.x) / this.model.pxPerBpm;
     this.setValue(this.model.value + increment);
-    // tell parent
 }
 function onSliderInputChange () {
     var value = parseInt($("#m-slider-input").val());

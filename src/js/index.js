@@ -2,9 +2,7 @@
 var $ = require("jquery");
 var _ = require("underscore");
 var attachFastclick = require("fastclick");
-var Beat = require("./controllers/Beat.js");
 var Metronome = require("./controllers/Metronome.js");
-var Slider = require("./controllers/Slider.js");
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 window.ctx = ctx;
