@@ -3,6 +3,8 @@ var $ = require("jquery");
 var _ = require("underscore");
 var attachFastclick = require("fastclick");
 var Metronome = require("./controllers/Metronome.js");
+var Drag = require("./utils/Drag.js");
+//var Hammer = require("hammerjs");
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 window.ctx = ctx;
@@ -17,6 +19,37 @@ function init () {
     var metronome = new Metronome(ctx);
     window.metronome = metronome;
     _.times(4, metronome.addBeat, metronome);
+    $("#m-ui-help").click(showHelp);
+    var helpDrag = new Drag({
+        el: $("#help-container"),
+        ondrag: ondrag,
+        onend: onend
+    });
+    var dragRight = 0;
+    var threshold = 30;
+    function ondrag () {
+        dragRight += helpDrag.newPoint.x - helpDrag.oldPoint.x;
+        if (dragRight > threshold) {
+            hideHelp();
+        }
+    }
+    function onend () {
+        if (dragRight > threshold) {
+            hideHelp();
+        }
+        dragRight = 0;
+    }
+}
+function showHelp (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $("#m-inner").addClass("skew-left");
+    $("#help-container").addClass("help-opened");
+    $("#m-container").one("click", hideHelp);
+}
+function hideHelp () {
+    $("#m-inner").removeClass("skew-left");
+    $("#help-container").removeClass("help-opened");
 }
 function unlockAudio () {
     var buffer = ctx.createBuffer(1, 1, 22050);
@@ -25,4 +58,6 @@ function unlockAudio () {
     source.connect(ctx.destination);
     source.start(0);
 }
-require("./utils/Analytics.js")();
+
+
+//require("./utils/Analytics.js")();

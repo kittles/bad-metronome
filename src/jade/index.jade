@@ -38,18 +38,27 @@ html.no-js
   body
     .body-container
       #rotate-screen rotate to portrait!
-      #s-container
       #m-container
-        #m-ui
-          h1#m-title Very Metronome
-          #m-ui-remove-beat.btn -
-          #m-ui-add-beat.btn +
-          #m-ui-toggle.btn.stopped Start
-        #m-slider
-          #m-slider-tick-arrow
-          #m-slider-tick-arrow-shadow
-          input(type='text' pattern="[0-9]*")#m-slider-input
-          #m-slider-slider
-        #m-beats
+        #m-inner
+          #m-ui
+            #m-ui-help ?
+            h1#m-title Very Metronome
+            #m-ui-remove-beat.btn -
+            #m-ui-add-beat.btn +
+            #m-ui-toggle.btn.stopped Start
+          #m-slider
+            #m-slider-tick-arrow
+            #m-slider-tick-arrow-shadow
+            input(type='text' pattern="[0-9]*")#m-slider-input
+            #m-slider-slider
+          #m-beats
+      #help-container
+        #help-buttons
+          p Use -, + buttons to add and remove beats. Start / Stop starts and stops the metronome
+        #help-slider
+          p Drag the slider to change tempo. Use the slider input to set a specific tempo
+        #help-beats
+          p Drag beats up and down to change volume. Tap them to mute / unmute
     link(href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css')
-    script(src="bundle.min.js")
+    //script(src="bundle.min.js")
+    script(src="bundle.js")

@@ -35,6 +35,7 @@ function Drag (settings) {
 Drag.prototype.handleStart = function handleStart (e) {
     window.currentEl = this.el;
     this.oldPoint = getCoordinates(e);
+    this.onstart();
     $(window).on(DRAG_EVENTS, this.handleDrag.bind(this));
     $(window).one(END_EVENTS, this.handleEnd.bind(this));
 };
