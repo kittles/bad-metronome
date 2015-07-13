@@ -47,10 +47,24 @@ function showHelp (e) {
     $("#m-inner").addClass("skew-left");
     $("#help-container").addClass("help-opened");
     $("#m-container").one("click", hideHelp);
+
+    // slide in each bit
+    setTimeout(function () {
+        $("#help-buttons").removeClass("hidden-el");
+    }, 300);
+    setTimeout(function () {
+        $("#help-slider").removeClass("hidden-el");
+    }, 400);
+    setTimeout(function () {
+        $("#help-beats").removeClass("hidden-el");
+    }, 500);
 }
-function hideHelp () {
+function hideHelp (e) {
+    e.preventDefault();
+    e.stopPropagation();
     $("#m-inner").removeClass("skew-left");
     $("#help-container").removeClass("help-opened");
+    $(".help-item").addClass("hidden-el");
 }
 function unlockAudio () {
     var buffer = ctx.createBuffer(1, 1, 22050);
@@ -61,4 +75,4 @@ function unlockAudio () {
 }
 
 
-//require("./utils/Analytics.js")();
+require("./utils/Analytics.js")();

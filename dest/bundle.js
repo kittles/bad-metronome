@@ -11675,7 +11675,7 @@ Beat.prototype.setSound = function setSound (value) {
     this.model.sound = value; 
 };
 
-},{"../models/Beat.js":8,"../utils/Drag.js":12,"../views/Beat.js":14,"jquery":2}],5:[function(require,module,exports){
+},{"../models/Beat.js":8,"../utils/Drag.js":13,"../views/Beat.js":15,"jquery":2}],5:[function(require,module,exports){
 var $ = require("jquery");
 var _ = require("underscore");
 var MetronomeModel = require("../models/Metronome.js");
@@ -11796,7 +11796,7 @@ Metronome.prototype.bufferFull = function bufferFull () {
     return (buffer >= this.buffer);
 };
 
-},{"../models/Metronome.js":9,"../views/Metronome.js":15,"./Beat.js":4,"./Slider.js":6,"jquery":2,"underscore":3}],6:[function(require,module,exports){
+},{"../models/Metronome.js":9,"../views/Metronome.js":16,"./Beat.js":4,"./Slider.js":6,"jquery":2,"underscore":3}],6:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var SliderView = require("../views/Slider.js");
@@ -11842,7 +11842,7 @@ function onSliderInputChange () {
     }
 }
 
-},{"../models/Slider.js":10,"../utils/Drag.js":12,"../views/Slider.js":16,"jquery":2,"underscore":3}],7:[function(require,module,exports){
+},{"../models/Slider.js":10,"../utils/Drag.js":13,"../views/Slider.js":17,"jquery":2,"underscore":3}],7:[function(require,module,exports){
 /* global AudioContext */
 var $ = require("jquery");
 var _ = require("underscore");
@@ -11892,10 +11892,24 @@ function showHelp (e) {
     $("#m-inner").addClass("skew-left");
     $("#help-container").addClass("help-opened");
     $("#m-container").one("click", hideHelp);
+
+    // slide in each bit
+    setTimeout(function () {
+        $("#help-buttons").removeClass("hidden-el");
+    }, 300);
+    setTimeout(function () {
+        $("#help-slider").removeClass("hidden-el");
+    }, 400);
+    setTimeout(function () {
+        $("#help-beats").removeClass("hidden-el");
+    }, 500);
 }
-function hideHelp () {
+function hideHelp (e) {
+    e.preventDefault();
+    e.stopPropagation();
     $("#m-inner").removeClass("skew-left");
     $("#help-container").removeClass("help-opened");
+    $(".help-item").addClass("hidden-el");
 }
 function unlockAudio () {
     var buffer = ctx.createBuffer(1, 1, 22050);
@@ -11906,9 +11920,9 @@ function unlockAudio () {
 }
 
 
-//require("./utils/Analytics.js")();
+require("./utils/Analytics.js")();
 
-},{"./controllers/Metronome.js":5,"./utils/Drag.js":12,"fastclick":1,"jquery":2,"underscore":3}],8:[function(require,module,exports){
+},{"./controllers/Metronome.js":5,"./utils/Analytics.js":12,"./utils/Drag.js":13,"fastclick":1,"jquery":2,"underscore":3}],8:[function(require,module,exports){
 var Sound = require("./Sound.js");
 
 module.exports = Beat;
@@ -11979,7 +11993,7 @@ Slider.prototype.getTickSpace = function getTickSpace () {
     return 5 * Math.round(space / 5);
 };
 
-},{"../utils/Util.js":13,"jquery":2}],11:[function(require,module,exports){
+},{"../utils/Util.js":14,"jquery":2}],11:[function(require,module,exports){
 module.exports = Sound;
 
 function Sound () {
@@ -12013,6 +12027,18 @@ Sound.prototype.play = function play () {
 };
 
 },{}],12:[function(require,module,exports){
+// jscs:disable
+module.exports = function () {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-65035387-1', 'auto');
+  ga('send', 'pageview');
+};
+
+},{}],13:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 
@@ -12094,7 +12120,7 @@ function contain (e) {
     e.preventDefault();
 }
 
-},{"jquery":2,"underscore":3}],13:[function(require,module,exports){
+},{"jquery":2,"underscore":3}],14:[function(require,module,exports){
 var $ = require("jquery");
 
 var Util = {
@@ -12117,7 +12143,7 @@ function clamp (min, max, value) {
 
 module.exports = Util;
 
-},{"jquery":2}],14:[function(require,module,exports){
+},{"jquery":2}],15:[function(require,module,exports){
 var $ = require("jquery");
 var util = require("../utils/Util.js");
 
@@ -12166,7 +12192,7 @@ Beat.prototype.drawBeat = function drawBeat () {
     });
 };
 
-},{"../utils/Util.js":13,"jquery":2}],15:[function(require,module,exports){
+},{"../utils/Util.js":14,"jquery":2}],16:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 
@@ -12205,7 +12231,7 @@ Metronome.prototype.sizeBeatsContainer = function sizeBeatsContainer () {
     this.beats.css("height", $(window).height() - top);
 };
 
-},{"jquery":2,"underscore":3}],16:[function(require,module,exports){
+},{"jquery":2,"underscore":3}],17:[function(require,module,exports){
 var _ = require("underscore");
 var $ = require("jquery");
 var util = require("../utils/Util.js");
@@ -12259,4 +12285,4 @@ Slider.prototype.makeTick = function makeTick (parent, model, number) {
     parent.append(tick);
 };
 
-},{"../utils/Util.js":13,"jquery":2,"underscore":3}]},{},[7]);
+},{"../utils/Util.js":14,"jquery":2,"underscore":3}]},{},[7]);

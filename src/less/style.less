@@ -134,6 +134,12 @@ h1 {
     top: 45%;
     color: rgb(255, 189, 189);
 }
+.help-item {
+    transform: translateX(0%);
+    opacity: 1;
+    transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+}
 #help-dismiss {
     position: absolute;
     left: ~"calc(100% - 40px)";
@@ -144,4 +150,11 @@ h1 {
     font-size: 30px;
     color: white;
     cursor: pointer;
+}
+.hidden-el {
+    transform: translateX(5%);
+    -webkit-transform: translateX(5%);
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
 }

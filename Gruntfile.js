@@ -11,7 +11,7 @@ module.exports = function (grunt) {
             ],
             tasks: [
                 "browserify",
-                //"uglify",
+                "uglify",
                 "jade",
                 "less"
             ]
