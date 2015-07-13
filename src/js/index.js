@@ -39,6 +39,7 @@ function init () {
         }
         dragRight = 0;
     }
+    $("#help-dismiss").click(hideHelp);
 }
 function showHelp (e) {
     e.preventDefault();
