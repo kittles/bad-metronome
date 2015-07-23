@@ -11849,7 +11849,6 @@ var _ = require("underscore");
 var attachFastclick = require("fastclick");
 var Metronome = require("./controllers/Metronome.js");
 var Drag = require("./utils/Drag.js");
-//var Hammer = require("hammerjs");
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 window.ctx = ctx;
